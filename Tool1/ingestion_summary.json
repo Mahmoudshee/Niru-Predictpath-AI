@@ -1,0 +1,9 @@
+{
+  "total_events": 6,
+  "success": 6,
+  "failed": 0,
+  "by_type": {
+    "unknown": 6
+  },
+  "source_file": "data\\uploads\\kenty.log"
+}
