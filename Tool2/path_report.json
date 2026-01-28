@@ -1,0 +1,53 @@
+[
+  {
+    "session_id": "('u101@dom1_1',)",
+    "root_cause_node": "db98b9a5-a031-4900-885f-538f8ee086c9",
+    "blast_radius": [
+      "file-02",
+      "dc-01",
+      "ws-01"
+    ],
+    "path_anomaly_score": 8.7,
+    "prediction_vector": [
+      {
+        "next_node": "Discovery",
+        "probability": 0.3
+      },
+      {
+        "next_node": "Credential Access",
+        "probability": 0.2
+      },
+      {
+        "next_node": "Standard User Activity",
+        "probability": 0.5
+      }
+    ],
+    "generated_at": "2026-01-26T08:57:44.135307"
+  },
+  {
+    "session_id": "('u999@dom1_1',)",
+    "root_cause_node": "62d8951b-a43d-4405-a577-eea748d1dc42",
+    "blast_radius": [
+      "dc-01",
+      "app-01",
+      "db-01",
+      "ws-01"
+    ],
+    "path_anomaly_score": 17.72,
+    "prediction_vector": [
+      {
+        "next_node": "Discovery",
+        "probability": 0.3
+      },
+      {
+        "next_node": "Credential Access",
+        "probability": 0.2
+      },
+      {
+        "next_node": "Standard User Activity",
+        "probability": 0.5
+      }
+    ],
+    "generated_at": "2026-01-26T08:57:44.152226"
+  }
+]

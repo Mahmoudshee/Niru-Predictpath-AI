@@ -1,0 +1,7 @@
+polars>=0.20.0
+networkx>=3.2.1
+pydantic>=2.5.0
+rich>=13.7.0
+numpy>=1.26.0
+tzdata
+
