@@ -1,0 +1,14 @@
+[project]
+name = "tool3-predictive-engine"
+version = "0.1.0"
+description = "Predictive Attack Trajectory Engine for PredictPath AI"
+requires-python = ">=3.11"
+dependencies = [
+    "networkx>=3.2.1",
+    "pydantic>=2.5.0",
+    "numpy>=1.26.0",
+    "polars>=0.20.0"
+]
+
+[tool.setuptools]
+packages = ["src"]
