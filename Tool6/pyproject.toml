@@ -1,0 +1,18 @@
+[project]
+name = "tool6-governance-engine"
+version = "0.1.0"
+description = "Continuous Learning, Oversight & Trust Engine"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.5.0",
+    "sqlalchemy>=2.0.0",
+    "typer>=0.9.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "rich>=13.7.0",
+    "scipy>=1.10.0", # For statistical drift calculation
+    "numpy>=1.24.0"
+]
+
+[tool.setuptools]
+packages = ["src"]

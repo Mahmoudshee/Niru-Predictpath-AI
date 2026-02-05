@@ -1,0 +1,26 @@
+# Logs
+logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv
+env/
+venv/
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
+share/
+
+# Data
+data/
+db/
+*.db
+*.sqlite
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

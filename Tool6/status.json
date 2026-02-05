@@ -1,0 +1,9 @@
+{
+  "version_id": "vfdc4474c",
+  "containment_threshold": 0.5,
+  "disruptive_threshold": 0.7607,
+  "trust_momentum": 0.0425416693171875,
+  "success_streak": 8,
+  "failure_streak": 0,
+  "trend": "relaxing"
+}
