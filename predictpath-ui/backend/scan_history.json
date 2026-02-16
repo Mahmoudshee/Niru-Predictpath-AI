@@ -1,0 +1,36 @@
+{
+  "scans": [
+    {
+      "id": "3282e92b-5c89-4115-83c3-8508f47642cd",
+      "scan_type": "web",
+      "timestamp": "2026-02-06T12:33:25.403226",
+      "status": "completed",
+      "log_path": "scripts\\saved-logs\\zap_report_20260206-123234.json",
+      "file_name": "zap_report_20260206-123234.json"
+    },
+    {
+      "id": "459fb754-f312-42fa-904f-44769f5e8e37",
+      "scan_type": "web",
+      "timestamp": "2026-02-06T12:29:30.223549",
+      "status": "completed",
+      "log_path": "scripts\\saved-logs\\zap_report_20260206-122845.json",
+      "file_name": "zap_report_20260206-122845.json"
+    },
+    {
+      "id": "574e3795-2824-4573-b94c-d61c25cc4f95",
+      "scan_type": "endpoint",
+      "timestamp": "2026-02-06T12:14:25.326350",
+      "status": "completed",
+      "log_path": "scripts\\saved-logs\\wazuh_report_20260206_121425.json",
+      "file_name": "wazuh_report_20260206_121425.json"
+    },
+    {
+      "id": "0d159ea1-54a9-4189-8867-060513d08683",
+      "scan_type": "endpoint",
+      "timestamp": "2026-02-06T11:27:33.511286",
+      "status": "completed",
+      "log_path": "scripts\\saved-logs\\wazuh_report_20260206_112733.json",
+      "file_name": "wazuh_report_20260206_112733.json"
+    }
+  ]
+}
