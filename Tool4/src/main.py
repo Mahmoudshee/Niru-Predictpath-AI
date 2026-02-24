@@ -29,7 +29,7 @@ def visualize_decision_board(decisions: list):
     """
     Renders the SOC Response Board (Consolidated by Principal).
     """
-    table = Table(title="🛡️ ADAPTIVE RESPONSE PRIORITIZATION BOARD (ELITE TIER) 🛡️", show_header=True, header_style="bold white on blue")
+    table = Table(title="ADAPTIVE RESPONSE PRIORITIZATION BOARD (ELITE TIER)", show_header=True, header_style="bold white on blue")
     table.add_column("Rank", justify="center", style="bold white")
     table.add_column("Principal / Session", style="cyan")
     table.add_column("Urgency", justify="center")
@@ -53,8 +53,12 @@ def visualize_decision_board(decisions: list):
     final_rank = 1
     for target_id, group_items in sorted_groups:
         # Pick representative (highest urgency/rank)
-        primary = group_items[0] # They are already sorted by rank in main
+        primary = group_items[0] 
         
+        # --- NEW: Strategic Panel for Principal ---
+        if primary.get("mentor_summary"):
+             console.print(Panel(f"[italic white]{primary['mentor_summary']}[/italic white]", title=f"[bold]Strategy: {target_id}[/bold]", border_style="cyan"))
+
         count = len(group_items)
         session_label = f"{target_id}"
         if count > 1:
@@ -70,7 +74,10 @@ def visualize_decision_board(decisions: list):
         elif urgency == "Medium": urg_style = "yellow"
         
         main_action = primary["recommended_actions"][0]
-        action_text = f"{main_action['action_type']}"
+        # Include Guidelines in Action Text for terminal viewing
+        guidelines = main_action.get("mitigation_guidelines", [])
+        guideline_text = "\n[dim]" + "\n".join([f"  • {g}" for g in guidelines]) + "[/dim]" if guidelines else ""
+        action_text = f"{main_action['action_type']}{guideline_text}"
         
         rr = main_action["justification"]["risk_reduction"]
         rr_text = f"-{rr['absolute']:.0%} Abs."
@@ -120,12 +127,43 @@ def main():
     correlation_map = engine.analyze_correlations(forecasts)
     
     # Phase 1: Evaluate Sessions
+    raw_decisions = []
     for session_forecast in forecasts:
         s_id = session_forecast.get("session_id")
         correlation_ctx = correlation_map.get(s_id, {})
-        
         decision = engine.evaluate_session(session_forecast, correlation_ctx)
-        decisions.append(decision)
+        raw_decisions.append(decision)
+        
+    # Phase 2: STRATEGIC AGGREGATION (Eliminating Duplication)
+    aggregated_map = {}
+    merged_counts = defaultdict(int)
+    
+    for d in raw_decisions:
+        target = d.recommended_actions[0].target.identifier
+        key = f"{target}"
+        
+        if key not in aggregated_map:
+            aggregated_map[key] = d
+            merged_counts[key] = 1
+        else:
+            merged_counts[key] += 1
+            existing = aggregated_map[key]
+            urgency_levels = {"Critical": 4, "High": 3, "Medium": 2, "Low": 1}
+            
+            # Switch to the new decision if it's more urgent or higher confidence
+            if urgency_levels[d.urgency_level] > urgency_levels[existing.urgency_level]:
+                aggregated_map[key] = d
+            elif urgency_levels[d.urgency_level] == urgency_levels[existing.urgency_level]:
+                if d.decision_confidence > existing.decision_confidence:
+                    aggregated_map[key] = d
+    
+    # Finalize Aggregated Decisions with visibility notes
+    for key, d in aggregated_map.items():
+        count = merged_counts[key]
+        if count > 1:
+            d.mentor_summary += f" [Consolidated Campaign: {count} correlated asset hits merged into this response]"
+            
+    decisions = list(aggregated_map.values())
         
     # Global Ranking
     urgency_map = {"Critical": 4, "High": 3, "Medium": 2, "Low": 1}

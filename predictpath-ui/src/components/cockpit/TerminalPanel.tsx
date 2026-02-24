@@ -128,7 +128,7 @@ export const TerminalPanel = ({ lines, onClear }: TerminalPanelProps) => {
       {/* Terminal Content */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 font-mono text-xs leading-relaxed"
+        className="flex-1 overflow-y-auto p-2.5 font-mono text-xs leading-relaxed"
       >
         {lines.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground">

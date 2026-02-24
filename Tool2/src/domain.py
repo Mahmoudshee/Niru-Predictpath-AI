@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
 
 class EnrichedEvent(BaseModel):
@@ -8,21 +8,24 @@ class EnrichedEvent(BaseModel):
     """
     event_id: str
     timestamp: datetime
-    user: str
-    source_host: str
+    user: Optional[str] = "Unknown"
+    source_host: Optional[str] = "Unknown"
     target_host: Optional[str] = None
     event_type: str
     protocol: Optional[str] = None
     mitre_technique: Optional[str] = None
+    observed_cve_ids: List[str] = []
+    observed_cwe_ids: List[str] = []
     confidence_score: float = Field(..., ge=0.0, le=1.0)
     data_quality_score: float = Field(..., ge=0.0, le=1.0)
+    raw_text: Optional[str] = None
 
 class Session(BaseModel):
     """
     Represents a grouped set of events for an identity within a time window.
     """
     session_id: str
-    user: str
+    user: Optional[str] = "Unknown"
     start_time: datetime
     end_time: datetime
     events: List[EnrichedEvent]
@@ -44,4 +47,11 @@ class PathReport(BaseModel):
     blast_radius: List[str]
     path_anomaly_score: float
     prediction_vector: List[PathPrediction]
+    vulnerability_summary: List[str] = []
+    observed_techniques: List[str] = []
+    cwe_clusters: List[str] = []
+    event_summary: Dict[str, int] = {}
+    tactical_narrative: str = ""
+    plain_language_summary: str = ""
+    business_risk_level: str = "Informational"  # High, Medium, Low, Informational
     generated_at: datetime = Field(default_factory=datetime.utcnow)

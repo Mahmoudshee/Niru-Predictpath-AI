@@ -1,0 +1,110 @@
+[
+  {
+    "session_id": "Activity on System",
+    "decision_timestamp": "2026-02-23T12:31:59.259414Z",
+    "decision_confidence": 1.0,
+    "priority_rank": 1,
+    "urgency_level": "Critical",
+    "recommended_actions": [
+      {
+        "action_id": "f7bfb471-5854-48ce-9e16-90d05e5c8cac",
+        "action_type": "Isolate Host",
+        "action_class": "Disruptive",
+        "requires_approval": true,
+        "target": {
+          "type": "Host",
+          "identifier": "Unknown"
+        },
+        "vulnerability_details": {
+          "is_kev": false,
+          "max_cvss": 9.8
+        },
+        "mitigation_guidelines": [
+          "Disconnect host from all internal and external networks.",
+          "For Cloud/Web assets: Suspend deployment or enable 'Maintenance Mode' in console.",
+          "Scan all other hosts in the same segment for persistence."
+        ],
+        "justification": {
+          "predicted_scenarios": [
+            "T1560"
+          ],
+          "risk_reduction": {
+            "absolute": 0.4,
+            "relative": "Mitigates 99% of T1560 risk"
+          },
+          "time_to_impact_seconds": 120,
+          "confidence_alignment": {
+            "tool3_confidence": 0.95,
+            "decision_confidence": 1.0,
+            "threshold_applied": 0.85
+          },
+          "signal_gap_closed": "Controls T1560"
+        },
+        "recommended_within_seconds": 120
+      }
+    ],
+    "rejected_actions": [],
+    "model_version": "v4.1-Vuln-Driven",
+    "mentor_summary": "Disruptive mitigation strategy for Activity on System has been initiated to ensure defensive depth. The selected action, 'Isolate Host', targets Host 'Unknown' with an estimated risk reduction of 39.6% across the predicted trajectory. Manual authorization is required before execution due to potential service disruption.",
+    "decision_explainability": {
+      "why_now": "Vulnerability Context: Max CVSS 9.8. Prob (40%) within 120.0s.",
+      "why_not_later": "Delay increases lateral movement window.",
+      "what_happens_if_ignored": "Unmitigated Risk: 40% chance of T1560 exploiting 9.8 CVSS vuln.",
+      "correlation_context": "Aggregated Campaign: 1 correlated sessions hit 'Activity on System'"
+    }
+  },
+  {
+    "session_id": "Activity on 172.20.192.1",
+    "decision_timestamp": "2026-02-23T12:31:59.240890Z",
+    "decision_confidence": 0.11,
+    "priority_rank": 2,
+    "urgency_level": "Low",
+    "recommended_actions": [
+      {
+        "action_id": "555b6f65-d371-442c-bf81-2afdcf61c89e",
+        "action_type": "Enable Process Auditing",
+        "action_class": "Containment",
+        "requires_approval": true,
+        "target": {
+          "type": "User",
+          "identifier": "Activity on 172.20.192.1"
+        },
+        "vulnerability_details": {
+          "is_kev": false,
+          "max_cvss": 0.0
+        },
+        "mitigation_guidelines": [
+          "Activate Sysmon or similar tool to track process creation.",
+          "Review command-line arguments for suspicious encoded strings.",
+          "Monitor for unauthorized use of living-off-the-land (LotL) binaries."
+        ],
+        "justification": {
+          "predicted_scenarios": [
+            "T1592"
+          ],
+          "risk_reduction": {
+            "absolute": 0.1,
+            "relative": "Mitigates 25% of T1592 risk"
+          },
+          "time_to_impact_seconds": 300,
+          "confidence_alignment": {
+            "tool3_confidence": 0.1,
+            "decision_confidence": 0.11499999999999999,
+            "threshold_applied": 0.1
+          },
+          "signal_gap_closed": "Controls T1592"
+        },
+        "recommended_within_seconds": 300
+      }
+    ],
+    "rejected_actions": [],
+    "model_version": "v4.1-Vuln-Driven",
+    "mentor_summary": "Disruptive mitigation strategy for Activity on 172.20.192.1 has been initiated to ensure defensive depth. The selected action, 'Enable Process Auditing', targets User 'Activity on 172.20.192.1' with an estimated risk reduction of 10.0% across the predicted trajectory. Manual authorization is required before execution due to potential service disruption.",
+    "decision_explainability": {
+      "why_now": "Vulnerability Context: Max CVSS 0.0. Prob (40%) within 300.0s.",
+      "why_not_later": "Delay increases lateral movement window.",
+      "what_happens_if_ignored": "Unmitigated Risk: 40% chance of T1592 exploiting 0.0 CVSS vuln.",
+      "correlation_context": "Aggregated Campaign: 1 correlated sessions hit 'Activity on 172.20.192.1'"
+    }
+  }
+]

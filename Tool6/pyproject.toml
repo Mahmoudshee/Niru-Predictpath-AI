@@ -11,7 +11,8 @@ dependencies = [
     "uvicorn>=0.20.0",
     "rich>=13.7.0",
     "scipy>=1.10.0", # For statistical drift calculation
-    "numpy>=1.24.0"
+    "numpy>=1.24.0",
+    "fpdf2>=2.8.0"
 ]
 
 [tool.setuptools]

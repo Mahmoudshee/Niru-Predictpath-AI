@@ -35,6 +35,8 @@ class Tool4Target(BaseModel):
 class Tool4Action(BaseModel):
     action_type: str
     target: Tool4Target
+    requires_approval: bool = False
+    vulnerability_details: Dict[str, Any] = {}
     justification: Dict[str, Any]
 
 class Tool4Decision(BaseModel):
@@ -69,6 +71,7 @@ class ExecutionResult(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     executor: str # system / human
     message: str
+    action_narrative: str = ""
     dry_run_output: Optional[str] = None
     rollback_token: Optional[RollbackToken] = None
     audit_hash: Optional[str] = None

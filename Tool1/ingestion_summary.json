@@ -1,9 +1,28 @@
 {
-  "total_events": 6,
-  "success": 6,
+  "total_processed": 1000,
+  "ingestion_limit": 1000,
+  "success": 1000,
   "failed": 0,
-  "by_type": {
-    "unknown": 6
+  "intelligence": {
+    "mitre_breakdown": {
+      "T1190": 1,
+      "T1107": 2,
+      "T1046": 1,
+      "T1059": 16,
+      "T1112": 30,
+      "T1021": 1
+    },
+    "top_hosts": {
+      "172.20.192.1": 9
+    },
+    "top_users": {},
+    "event_types": {
+      "unknown": 832,
+      "security_alert": 9,
+      "system_audit": 143,
+      "process_start": 16
+    }
   },
-  "source_file": "data\\uploads\\kenty.log"
+  "source_file": "data\\uploads\\wazuh_report_20260206_121425.json",
+  "timestamp": "2026-02-23T12:31:40.066444"
 }

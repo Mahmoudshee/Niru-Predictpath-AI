@@ -65,6 +65,8 @@ class CanonicalEvent(BaseModel):
     # Enrichment
     mitre_technique: Optional[str] = Field(None, description="MITRE ATT&CK Technique ID (e.g., T1059)")
     mitre_tactic: Optional[str] = None
+    observed_cve_ids: list[str] = Field(default_factory=list, description="Explicit CVEs mentioned in log text")
+    observed_cwe_ids: list[str] = Field(default_factory=list, description="Explicit CWEs mentioned in log text")
     
     # Scoring
     confidence_score: float = Field(..., ge=0.0, le=1.0, description="Model certainty (0.0-1.0)")

@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime
 from typing import List
 from fastapi import FastAPI, WebSocket, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import glob
@@ -194,6 +195,217 @@ def read_file(path: str):
         raise HTTPException(status_code=404, detail="File not found")
     with open(abs_path, "r", encoding="utf-8") as f:
         return {"content": f.read()}
+
+@app.get("/api/download")
+def download_file(path: str):
+    """Serve a file as a downloadable attachment (used for Tool 5 remediation scripts)."""
+    abs_path = os.path.abspath(os.path.join(TOOLS_ROOT, path))
+    if not abs_path.startswith(TOOLS_ROOT):
+        raise HTTPException(status_code=403, detail="Access denied")
+    if not os.path.exists(abs_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    filename = os.path.basename(abs_path)
+    return FileResponse(
+        path=abs_path,
+        media_type="application/octet-stream",
+        filename=filename,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+@app.get("/api/tool5/script-info")
+def get_tool5_script_info():
+    """Returns metadata about the latest Tool 5 remediation script."""
+    deployments_dir = os.path.join(TOOLS_ROOT, "Tool5", "deployments")
+    if not os.path.exists(deployments_dir):
+        return {"available": False, "message": "No scripts generated yet."}
+    
+    scripts = sorted(
+        glob.glob(os.path.join(deployments_dir, "PredictPath_Remediation_*.ps1")),
+        key=os.path.getmtime,
+        reverse=True
+    )
+    
+    if not scripts:
+        return {"available": False, "message": "No remediation scripts found."}
+    
+    latest = scripts[0]
+    rel_path = os.path.relpath(latest, TOOLS_ROOT).replace("\\", "/")
+    stat = os.stat(latest)
+    
+    return {
+        "available": True,
+        "filename": os.path.basename(latest),
+        "path": rel_path,
+        "size_bytes": stat.st_size,
+        "generated_at": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+        "all_scripts": [
+            {
+                "filename": os.path.basename(s),
+                "path": os.path.relpath(s, TOOLS_ROOT).replace("\\", "/"),
+                "generated_at": datetime.fromtimestamp(os.path.getmtime(s)).isoformat()
+            }
+            for s in scripts
+        ]
+    }
+
+@app.get("/api/tool6/status")
+def get_tool6_status():
+    """Read Tool 6 governance DB directly and return live status."""
+    import sqlite3 as _sqlite3
+    db_path = os.path.join(TOOLS_ROOT, "Tool6", "data", "governance.db")
+    status_file = os.path.join(TOOLS_ROOT, "Tool6", "status.json")
+
+    # Try status.json first (written by Tool 6 after each run)
+    if os.path.exists(status_file):
+        try:
+            with open(status_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            data["source"] = "status_file"
+            return data
+        except Exception:
+            pass
+
+    # Fallback: read DB directly
+    if not os.path.exists(db_path):
+        return {
+            "error": "Governance database not found. Run Tool 6 first.",
+            "available": False
+        }
+
+    try:
+        conn = _sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        conn.row_factory = _sqlite3.Row
+
+        # Active config
+        cur = conn.execute("SELECT * FROM model_config WHERE is_active=1 ORDER BY created_at DESC LIMIT 1")
+        row = cur.fetchone()
+        if not row:
+            conn.close()
+            return {"error": "No active model configuration", "available": False}
+
+        config = dict(row)
+        momentum = config.get("trust_momentum", 0.0)
+        if momentum < -0.001:
+            trend = "tightening"
+            trend_label = "Tightening (Hardening)"
+        elif momentum > 0.001:
+            trend = "relaxing"
+            trend_label = "Relaxing (Adapting)"
+        else:
+            trend = "stable"
+            trend_label = "Stable"
+
+        # Recent ledger entries
+        cur2 = conn.execute(
+            "SELECT hash_id, event_type, actor, timestamp, payload FROM trust_ledger ORDER BY timestamp DESC LIMIT 10"
+        )
+        ledger_entries = []
+        for r in cur2.fetchall():
+            try:
+                payload = json.loads(r["payload"]) if isinstance(r["payload"], str) else r["payload"]
+            except Exception:
+                payload = {}
+            ledger_entries.append({
+                "hash_id": r["hash_id"][:12] + "...",
+                "event_type": r["event_type"],
+                "actor": r["actor"],
+                "timestamp": r["timestamp"],
+                "payload": payload,
+            })
+
+        # Model history
+        cur3 = conn.execute(
+            "SELECT version_id, is_active, containment_threshold, disruptive_threshold, trust_momentum, success_streak, failure_streak, created_at FROM model_config ORDER BY created_at DESC LIMIT 6"
+        )
+        model_history = [dict(r) for r in cur3.fetchall()]
+
+        # Ledger count
+        cur4 = conn.execute("SELECT COUNT(*) as cnt FROM trust_ledger")
+        ledger_count = cur4.fetchone()["cnt"]
+
+        # Drift alerts (computed from current state)
+        drift_alerts = []
+        if momentum <= -0.25:
+            drift_alerts.append(
+                f"CRITICAL DRIFT: Trust momentum is severely negative ({momentum:+.4f}). "
+                "Autonomous actions are heavily restricted."
+            )
+        elif momentum >= 0.25:
+            drift_alerts.append(
+                f"HIGH RELAXATION: Trust momentum is very high ({momentum:+.4f}). "
+                "Thresholds are significantly lowered."
+            )
+        contain = config.get("containment_threshold", 0.6)
+        if contain >= 0.90:
+            drift_alerts.append(
+                f"THRESHOLD LOCK: Containment at {contain*100:.1f}% — near-lockdown state."
+            )
+        elif contain <= 0.45:
+            drift_alerts.append(
+                f"LOW GUARD: Containment at {contain*100:.1f}% — system is highly permissive."
+            )
+        failure_streak = config.get("failure_streak", 0)
+        if failure_streak >= 3:
+            drift_alerts.append(
+                f"FAILURE STREAK: {failure_streak} consecutive failures. Posture tightening."
+            )
+
+        # Recent drift samples for sparkline charts
+        drift_samples = []
+        try:
+            cur5 = conn.execute(
+                "SELECT metric_name, metric_value, timestamp, alert_triggered "
+                "FROM drift_samples ORDER BY timestamp DESC LIMIT 50"
+            )
+            drift_samples = [dict(r) for r in cur5.fetchall()]
+        except Exception:
+            pass  # Table may not exist on older DBs
+
+        conn.close()
+
+        return {
+            "source": "database",
+            "available": True,
+            "generated_at": datetime.now().isoformat(),
+            "version_id": config.get("version_id"),
+            "containment_threshold": config.get("containment_threshold"),
+            "disruptive_threshold": config.get("disruptive_threshold"),
+            "trust_momentum": momentum,
+            "success_streak": config.get("success_streak", 0),
+            "failure_streak": config.get("failure_streak", 0),
+            "trend": trend,
+            "trend_label": trend_label,
+            "ledger_integrity": True,
+            "ledger_entry_count": ledger_count,
+            "recent_ledger_entries": ledger_entries,
+            "model_history": model_history,
+            "drift_alerts": drift_alerts,
+            "drift_samples": drift_samples,
+        }
+
+    except Exception as e:
+        return {"error": str(e), "available": False}
+
+@app.get("/api/tool6/drift")
+def get_tool6_drift():
+    """Return the last 100 drift samples for charting in the UI."""
+    import sqlite3 as _sqlite3
+    db_path = os.path.join(TOOLS_ROOT, "Tool6", "data", "governance.db")
+    if not os.path.exists(db_path):
+        return {"available": False, "samples": []}
+    try:
+        conn = _sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        conn.row_factory = _sqlite3.Row
+        cur = conn.execute(
+            "SELECT metric_name, metric_value, timestamp, alert_triggered "
+            "FROM drift_samples ORDER BY timestamp ASC LIMIT 100"
+        )
+        samples = [dict(r) for r in cur.fetchall()]
+        conn.close()
+        return {"available": True, "samples": samples}
+    except Exception as e:
+        return {"available": False, "error": str(e), "samples": []}
+
 
 @app.delete("/api/file")
 def delete_file(path: str):

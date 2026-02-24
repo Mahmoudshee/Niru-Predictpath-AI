@@ -35,6 +35,7 @@ interface ToolConfig {
   inputPath: string;
   outputPath: string;
   isDestructive?: boolean;
+  isScriptGen?: boolean;
   isAuto?: boolean;
   requiresApproval?: boolean;
 }
@@ -96,7 +97,7 @@ const tools: ToolConfig[] = [
     command: ".\\.venv\\Scripts\\python.exe -m src.main",
     inputPath: "..\\Tool4\\response_plan.json",
     outputPath: "Tool5/execution_report.json",
-    isDestructive: true,
+    isScriptGen: true,
     requiresApproval: true,
   },
   {
@@ -114,12 +115,14 @@ const tools: ToolConfig[] = [
 type ToolStatus = "idle" | "running" | "complete" | "error";
 
 interface PipelineControlProps {
-  onExecute: (tool: ToolConfig) => void;
+  onExecute: (tool: ToolConfig) => Promise<void>;
+  onExecuteMany?: (tools: ToolConfig[]) => Promise<void>;
   toolStatuses: Record<number, ToolStatus>;
   uploadedFiles?: UploadedFile[];
+  toolResults?: Record<number, any>;
 }
 
-export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }: PipelineControlProps) => {
+export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [], toolResults = {} }: PipelineControlProps) => {
   const [confirmTool, setConfirmTool] = useState<ToolConfig | null>(null);
 
   const getStatusIcon = (status: ToolStatus) => {
@@ -148,7 +151,7 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }:
     }
   };
 
-  const handleToolClick = (tool: ToolConfig) => {
+  const handleToolClick = async (tool: ToolConfig) => {
     // Inject dynamic input path from uploaded files for Tool 1
     if (tool.id === 1 && uploadedFiles.length > 0) {
       const file = uploadedFiles[0];
@@ -160,21 +163,44 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }:
         command: fullCmd,
         inputPath: "" // Prevent Index.tsx from appending
       };
-      onExecute(execTool);
+      await onExecute(execTool);
       return;
     }
 
     if (tool.requiresApproval) {
       setConfirmTool(tool);
     } else {
-      onExecute(tool);
+      await onExecute(tool);
     }
   };
 
-  const handleConfirmExecution = () => {
+  const handleConfirmExecution = async () => {
     if (confirmTool) {
-      onExecute(confirmTool);
+      await onExecute(confirmTool);
       setConfirmTool(null);
+    }
+  };
+
+  const handleRunFullPipeline = async () => {
+    if (uploadedFiles.length === 0) return;
+
+    for (const tool of tools) {
+      // Prepare tool with correct command if needed
+      let execTool = { ...tool };
+      if (tool.id === 1) {
+        const file = uploadedFiles[0];
+        const path = file.serverPath || file.name;
+        execTool.command = `${tool.command} "${path}" --type lanl`;
+        execTool.inputPath = "";
+      }
+
+      // Execute and wait
+      try {
+        await onExecute(execTool);
+      } catch (e) {
+        console.error(`Pipeline failed at Tool ${tool.id}`, e);
+        break; // Stop on error
+      }
     }
   };
 
@@ -221,7 +247,9 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }:
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${tool.isDestructive
                       ? "bg-destructive/20 text-destructive"
-                      : "bg-primary/20 text-primary"
+                      : tool.isScriptGen
+                        ? "bg-blue-500/20 text-blue-400"
+                        : "bg-primary/20 text-primary"
                       }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -236,6 +264,11 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }:
                       {tool.isDestructive && (
                         <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
                           REAL / DESTRUCTIVE
+                        </Badge>
+                      )}
+                      {tool.isScriptGen && (
+                        <Badge className="text-[10px] px-1.5 py-0 bg-blue-600/80 hover:bg-blue-600 text-white border-0">
+                          SCRIPT GEN
                         </Badge>
                       )}
                       {tool.isAuto && (
@@ -259,6 +292,37 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }:
                     {needsFiles && (
                       <p className="text-[10px] text-warning mt-1">↑ Upload log files above to enable</p>
                     )}
+
+                    {/* Tool Specific Result Summaries (THE INTELLIGENCE) */}
+                    {status === "complete" && toolResults[tool.id] && (
+                      <div className="mt-2 flex flex-wrap gap-1.5 animate-in fade-in slide-in-from-left-2 duration-500">
+                        {/* Tool 1 Summaries: Pure Ingestion stats */}
+                        {tool.id === 1 && (
+                          <>
+                            <Badge variant="outline" className="text-[9px] h-4 border-primary/30 text-primary bg-primary/5">
+                              {toolResults[1].success || 0} Ingested
+                            </Badge>
+                            <Badge variant="outline" className="text-[9px] h-4 border-muted/30 text-muted-foreground bg-muted/5">
+                              {toolResults[1].intelligence?.mitre_breakdown ? Object.keys(toolResults[1].intelligence.mitre_breakdown).length : 0} Techniques
+                            </Badge>
+                          </>
+                        )}
+                        {/* Tool 2 Summaries: Deep Vulnerability Matching */}
+                        {tool.id === 2 && Array.isArray(toolResults[2]) && (
+                          <>
+                            <Badge variant="outline" className="text-[9px] h-4 border-primary/30 text-primary bg-primary/5">
+                              {toolResults[2].length} Sessions
+                            </Badge>
+                            <Badge variant="outline" className="text-[9px] h-4 border-red-500/30 text-red-400 bg-red-500/5">
+                              {toolResults[2].reduce((acc: number, s: any) => acc + (s.vulnerability_summary?.filter((v: string) => v.includes("CVE-")).length || 0), 0)} CVEs
+                            </Badge>
+                            <Badge variant="outline" className="text-[9px] h-4 border-orange-500/30 text-orange-400 bg-orange-500/5">
+                              {toolResults[2].reduce((acc: number, s: any) => acc + (s.vulnerability_summary?.filter((v: string) => !v.includes("CVE-")).length || 0), 0)} CWEs
+                            </Badge>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Status & Action */}
@@ -266,7 +330,7 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }:
                     {getStatusIcon(status)}
                     <Button
                       size="sm"
-                      variant={tool.isDestructive ? "destructive" : "default"}
+                      variant={tool.isDestructive ? "destructive" : tool.isScriptGen ? "default" : "default"}
                       disabled={isDisabled}
                       onClick={() => handleToolClick(tool)}
                       className="h-8 px-3"
@@ -290,48 +354,56 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [] }:
 
       {/* Run All Pipeline */}
       <div className="p-4 border-t border-border">
-        <Button className="w-full" size="lg">
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleRunFullPipeline}
+          disabled={uploadedFiles.length === 0 || Object.values(toolStatuses).some(s => s === "running")}
+        >
           <ChevronRight className="h-4 w-4 mr-2" />
           Run Full Pipeline (Tool 1 → 6)
         </Button>
         <p className="text-[10px] text-muted-foreground text-center mt-2">
-          Will pause at Tool 5 for approval
+          Executes all tools sequentially • Ends at Governance Audit
         </p>
       </div>
 
-      {/* Confirmation Dialog for Destructive Actions */}
+      {/* Confirmation Dialog */}
       <AlertDialog open={!!confirmTool} onOpenChange={() => setConfirmTool(null)}>
-        <AlertDialogContent className="border-destructive/50">
+        <AlertDialogContent className="border-blue-500/30 max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="h-5 w-5" />
-              Confirm Real System Execution
-            </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-3">
-              <p>
-                You are about to execute <strong>Tool {confirmTool?.id}: {confirmTool?.name}</strong>
-              </p>
-              <div className="rounded-lg bg-destructive/10 border border-destructive/30 p-3">
-                <p className="text-xs font-medium text-destructive mb-1">
-                  ⚠️ This action will execute REAL system commands
-                </p>
-                <code className="text-[10px] font-mono text-muted-foreground block">
-                  {confirmTool?.command} "{confirmTool?.inputPath}"
-                </code>
+            <AlertDialogTitle className="flex items-center gap-2 text-white">
+              <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <Zap className="h-4 w-4 text-blue-400" />
               </div>
-              <p className="text-sm">
-                This may modify system state, network configurations, or security settings.
-                This action cannot be undone.
+              Generate Remediation Script
+            </AlertDialogTitle>
+            <div className="text-sm text-muted-foreground space-y-3 pt-1">
+              <p>
+                Tool 5 will analyse the AI decisions from <strong className="text-white">Tool 4</strong> and generate a
+                ready-to-run <strong className="text-blue-300">PowerShell remediation script</strong> for you to download.
               </p>
-            </AlertDialogDescription>
+              <div className="rounded-lg bg-blue-500/5 border border-blue-500/20 p-3 space-y-1.5">
+                <p className="text-xs font-semibold text-blue-300">What this does:</p>
+                <ul className="text-xs text-muted-foreground space-y-1 list-none">
+                  <li>✅ Reads the threat decisions from Tool 4</li>
+                  <li>✅ Generates exact PowerShell commands for your environment</li>
+                  <li>✅ Saves a <code className="text-blue-300">.ps1</code> file you can download and review</li>
+                  <li>🚫 Does <strong className="text-white">not</strong> execute anything on your system</li>
+                </ul>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                You stay in full control — review the script before running it.
+              </p>
+            </div>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmExecution}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-blue-600 hover:bg-blue-500 text-white"
             >
-              Confirm Execution
+              Generate Script
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

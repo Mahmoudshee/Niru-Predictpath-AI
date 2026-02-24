@@ -1,0 +1,295 @@
+[
+  {
+    "session_id": "Activity on 172.20.192.1",
+    "generated_at": "2026-02-23T12:31:53.475667",
+    "current_state": {
+      "observed_techniques": [
+        "T1595"
+      ],
+      "last_seen_timestamp": "2026-02-23T12:31:53.472668Z",
+      "graph_depth": 1,
+      "host_scope": [
+        "172.20.192.1"
+      ],
+      "observed_vulnerabilities": []
+    },
+    "aggregate_confidence": 0.1,
+    "predicted_scenarios": [
+      {
+        "scenario_id": "e8adddf3-f20c-4d35-92be-5896be5ea89e",
+        "sequence": [
+          "T1592"
+        ],
+        "human_readable_sequence": "Gather Victim Host Information",
+        "probability": 0.4,
+        "reaction_time_window": {
+          "min_seconds": 300.0,
+          "max_seconds": 172800.0
+        },
+        "time_window_text": "Window: 5m to 2880m",
+        "risk_level": "Medium",
+        "scenario_type": "Primary",
+        "explainability": {
+          "positive_evidence": [
+            "Causal path from Active Scanning"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "d89bd8be-3f44-4258-aa42-90860280a4bc",
+        "sequence": [
+          "T1190"
+        ],
+        "human_readable_sequence": "Exploit Public-Facing Application",
+        "probability": 0.4,
+        "reaction_time_window": {
+          "min_seconds": 10.0,
+          "max_seconds": 300.0
+        },
+        "time_window_text": "Window: 10s to 5m",
+        "risk_level": "Medium",
+        "scenario_type": "Secondary",
+        "explainability": {
+          "positive_evidence": [
+            "Causal path from Active Scanning"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "92486395-e011-49e8-8f6a-8b2645cb1789",
+        "sequence": [
+          "T1190",
+          "T1059"
+        ],
+        "human_readable_sequence": "Exploit Public-Facing Application -> Command and Scripting Interpreter",
+        "probability": 0.24,
+        "reaction_time_window": {
+          "min_seconds": 20.0,
+          "max_seconds": 900.0
+        },
+        "time_window_text": "Window: 20s to 15m",
+        "risk_level": "Medium",
+        "scenario_type": "Secondary",
+        "explainability": {
+          "positive_evidence": [
+            "Causal path from Active Scanning"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "b2f294c3-dffc-437e-8ae1-1df2bc1a8989",
+        "sequence": [
+          "T1046"
+        ],
+        "human_readable_sequence": "Network Service Discovery",
+        "probability": 0.2,
+        "reaction_time_window": {
+          "min_seconds": 30.0,
+          "max_seconds": 900.0
+        },
+        "time_window_text": "Window: 30s to 15m",
+        "risk_level": "Medium",
+        "scenario_type": "Opportunistic",
+        "explainability": {
+          "positive_evidence": [
+            "Causal path from Active Scanning"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "8221def8-9d47-4ef6-b3ca-0d6e36997f43",
+        "sequence": [
+          "T1592",
+          "T1190"
+        ],
+        "human_readable_sequence": "Gather Victim Host Information -> Exploit Public-Facing Application",
+        "probability": 0.2,
+        "reaction_time_window": {
+          "min_seconds": 310.0,
+          "max_seconds": 173100.0
+        },
+        "time_window_text": "Window: 5m to 2885m",
+        "risk_level": "Medium",
+        "scenario_type": "Opportunistic",
+        "explainability": {
+          "positive_evidence": [
+            "Causal path from Active Scanning"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      }
+    ],
+    "mentor_narrative": "RECONNAISSANCE: Systematic scanning and information gathering detected on Activity on 172.20.192.1. An attacker exploiting these vulnerabilities is projected to pivot to 'Gather Victim Host Information' next (40% probability).",
+    "model_version": "v4.0-Vuln-Aware",
+    "evidence_summary": {
+      "grounding": 0.0,
+      "max_path_prob": 0.4,
+      "kev_boost": 0.0
+    },
+    "suppression_reason": null
+  },
+  {
+    "session_id": "Activity on System",
+    "generated_at": "2026-02-23T12:31:53.520205",
+    "current_state": {
+      "observed_techniques": [
+        "T1190",
+        "T1107",
+        "T1046",
+        "T1059",
+        "T1112",
+        "T1021",
+        "T1505",
+        "T1078"
+      ],
+      "last_seen_timestamp": "2026-02-23T12:31:53.503665Z",
+      "graph_depth": 8,
+      "host_scope": [
+        "Unknown"
+      ],
+      "observed_vulnerabilities": [
+        "CWE-89",
+        "CWE-285",
+        "CWE-78",
+        "CWE-20",
+        "CWE-77",
+        "CWE-306",
+        "CWE-94",
+        "CWE-434",
+        "CWE-284",
+        "CWE-200"
+      ]
+    },
+    "aggregate_confidence": 0.95,
+    "predicted_scenarios": [
+      {
+        "scenario_id": "52291c89-f9ff-44c0-aaa3-584b2e8c43d2",
+        "sequence": [
+          "T1560"
+        ],
+        "human_readable_sequence": "Archive Collected Data",
+        "probability": 0.4,
+        "reaction_time_window": {
+          "min_seconds": 120.0,
+          "max_seconds": 3600.0
+        },
+        "time_window_text": "Window: 2m to 60m",
+        "risk_level": "Medium",
+        "scenario_type": "Primary",
+        "explainability": {
+          "positive_evidence": [
+            "Captured weakness CWE-306 allows an attacker to achieve Archive Collected Data"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "e4332e81-c064-4c17-8995-509132bad9f0",
+        "sequence": [
+          "T1003"
+        ],
+        "human_readable_sequence": "OS Credential Dumping",
+        "probability": 0.3,
+        "reaction_time_window": {
+          "min_seconds": 60.0,
+          "max_seconds": 1800.0
+        },
+        "time_window_text": "Window: 1m to 30m",
+        "risk_level": "High",
+        "scenario_type": "Secondary",
+        "explainability": {
+          "positive_evidence": [
+            "Captured weakness CWE-306 allows an attacker to achieve OS Credential Dumping"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "f4ea51fd-2360-463e-99a2-779163674b58",
+        "sequence": [
+          "T1046"
+        ],
+        "human_readable_sequence": "Network Service Discovery",
+        "probability": 0.3,
+        "reaction_time_window": {
+          "min_seconds": 30.0,
+          "max_seconds": 900.0
+        },
+        "time_window_text": "Window: 30s to 15m",
+        "risk_level": "Medium",
+        "scenario_type": "Secondary",
+        "explainability": {
+          "positive_evidence": [
+            "Captured weakness CWE-306 allows an attacker to achieve Network Service Discovery"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "e9a0beee-4738-49b8-8768-da7c705c2332",
+        "sequence": [
+          "T1560",
+          "T1048"
+        ],
+        "human_readable_sequence": "Archive Collected Data -> Exfiltration Over Alternative Protocol",
+        "probability": 0.28,
+        "reaction_time_window": {
+          "min_seconds": 180.0,
+          "max_seconds": 7200.0
+        },
+        "time_window_text": "Window: 3m to 120m",
+        "risk_level": "Medium",
+        "scenario_type": "Opportunistic",
+        "explainability": {
+          "positive_evidence": [
+            "Captured weakness CWE-306 allows an attacker to achieve Archive Collected Data"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "a34baa37-911d-44c1-a933-26bcda1dc22d",
+        "sequence": [
+          "T1059"
+        ],
+        "human_readable_sequence": "Command and Scripting Interpreter",
+        "probability": 0.2,
+        "reaction_time_window": {
+          "min_seconds": 10.0,
+          "max_seconds": 600.0
+        },
+        "time_window_text": "Window: 10s to 10m",
+        "risk_level": "Medium",
+        "scenario_type": "Opportunistic",
+        "explainability": {
+          "positive_evidence": [
+            "Captured weakness CWE-78, CWE-306 allows an attacker to achieve Command and Scripting Interpreter"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      }
+    ],
+    "mentor_narrative": "CRITICAL ALERT: Session 'Activity on System' shows a high-velocity, confirmed attack sequence. The specific weaknesses identified (CWE-89, CWE-78, CWE-20) provide the technical logical bridges for the projected trajectory. An attacker exploiting these vulnerabilities is projected to pivot to 'Archive Collected Data' next (40% probability).",
+    "model_version": "v4.0-Vuln-Aware",
+    "evidence_summary": {
+      "grounding": 0.45,
+      "max_path_prob": 0.4,
+      "kev_boost": 0.0
+    },
+    "suppression_reason": null
+  }
+]

@@ -1,13 +1,11 @@
 [
   {
-    "session_id": "('u101@dom1_1',)",
-    "root_cause_node": "db98b9a5-a031-4900-885f-538f8ee086c9",
+    "session_id": "Activity on 172.20.192.1",
+    "root_cause_node": "0a51981a-93c2-4312-8969-1f03196c203f",
     "blast_radius": [
-      "file-02",
-      "dc-01",
-      "ws-01"
+      "172.20.192.1"
     ],
-    "path_anomaly_score": 8.7,
+    "path_anomaly_score": 12.79,
     "prediction_vector": [
       {
         "next_node": "Discovery",
@@ -22,32 +20,74 @@
         "probability": 0.5
       }
     ],
-    "generated_at": "2026-01-26T08:57:44.135307"
+    "vulnerability_summary": [],
+    "observed_techniques": [],
+    "cwe_clusters": [],
+    "event_summary": {
+      "unknown": 18
+    },
+    "tactical_narrative": "Detected 18 correlated events in this behavioral session. ",
+    "plain_language_summary": "Routine system activity or reconnaissance. No immediate compromise of core logic detected.",
+    "business_risk_level": "Low",
+    "generated_at": "2026-02-23T12:31:47.629389"
   },
   {
-    "session_id": "('u999@dom1_1',)",
-    "root_cause_node": "62d8951b-a43d-4405-a577-eea748d1dc42",
+    "session_id": "Activity on System",
+    "root_cause_node": "b306f720-ef6b-4ba9-bbe4-b5f62bcd7635",
     "blast_radius": [
-      "dc-01",
-      "app-01",
-      "db-01",
-      "ws-01"
+      "Unknown"
     ],
-    "path_anomaly_score": 17.72,
+    "path_anomaly_score": 100.0,
     "prediction_vector": [
       {
-        "next_node": "Discovery",
+        "next_node": "Collection",
+        "probability": 0.5
+      },
+      {
+        "next_node": "Exfiltration",
         "probability": 0.3
       },
       {
-        "next_node": "Credential Access",
+        "next_node": "Command and Control",
         "probability": 0.2
-      },
-      {
-        "next_node": "Standard User Activity",
-        "probability": 0.5
       }
     ],
-    "generated_at": "2026-01-26T08:57:44.152226"
+    "vulnerability_summary": [
+      "CWE-284: Improper Access Control",
+      "CWE-77: Command Injection",
+      "CWE-78: OS Command Injection",
+      "CWE-434: Unrestricted File Upload",
+      "CWE-89: SQL Injection",
+      "CWE-200: Information Exposure",
+      "CWE-20: Improper Input Validation",
+      "CWE-285: Improper Authorization",
+      "CWE-306: Missing Authentication for Critical Function",
+      "CWE-94: Code Injection"
+    ],
+    "observed_techniques": [
+      "T1190",
+      "T1107",
+      "T1046",
+      "T1059",
+      "T1112",
+      "T1021",
+      "T1505",
+      "T1078"
+    ],
+    "cwe_clusters": [
+      "Class",
+      "Pillar",
+      "Base"
+    ],
+    "event_summary": {
+      "unknown": 1646,
+      "security_alert": 18,
+      "system_audit": 286,
+      "process_start": 32
+    },
+    "tactical_narrative": "Detected 1982 correlated events in this behavioral session. Analysis reveals 18 explicit security alerts. Integrity monitoring has flagged unauthorized system modifications. ",
+    "plain_language_summary": "URGENT: Attacker has successfully achieved persistence or internal lateral movement. Data access is likely imminent.",
+    "business_risk_level": "High",
+    "generated_at": "2026-02-23T12:31:47.804691"
   }
 ]

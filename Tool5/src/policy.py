@@ -47,7 +47,15 @@ class PolicyEngine:
         if category == ActionCategory.OBSERVATIONAL:
             return ExecutionMode.AUTO, "Observational action safe for auto-execution."
             
+        if action.requires_approval:
+            return ExecutionMode.STAGED, "Tool 4 explicitly flagged as requiring human approval."
+
         if category == ActionCategory.CONTAINMENT:
+            # Check for KEV exploit context to boost to AUTO
+            is_kev = action.vulnerability_details.get("is_kev", False)
+            if is_kev:
+                return ExecutionMode.AUTO, "KEV-related Containment promoted to Auto-Execution."
+            
             if confidence >= 0.6:
                 return ExecutionMode.AUTO, f"Confidence ({confidence:.2f}) meets Containment threshold (0.6)."
             else:

@@ -43,6 +43,9 @@ def visualize_forecast(summary: PredictionSummary):
     )
     console.print(header)
     
+    if summary.mentor_narrative:
+        console.print(Panel(f"[italic white]{summary.mentor_narrative}[/italic white]", title="[bold]Strategic Insight[/bold]", border_style="cyan"))
+
     if summary.suppression_reason:
         console.print(f"[bold red]Predictions Suppressed:[/bold red] {summary.suppression_reason}\n")
         return
@@ -51,13 +54,12 @@ def visualize_forecast(summary: PredictionSummary):
     table = Table(title="Projected Scenarios", show_header=True, header_style="bold magenta")
     table.add_column("Prob", justify="right", style="cyan")
     table.add_column("Risk", justify="center")
-    table.add_column("Time Window", justify="center")
-    table.add_column("Sequence", style="green")
-    table.add_column("Evidence", style="dim white")
+    table.add_column("Likely Time Window", justify="center")
+    table.add_column("Attacker's Next Steps", style="green")
     
     for path in summary.predicted_scenarios:
         # Format Path
-        seq_str = " -> ".join([f"{t}" for t in path.sequence])
+        seq_str = path.human_readable_sequence
         
         # Colorize Risk
         risk_color = "green"
@@ -66,20 +68,13 @@ def visualize_forecast(summary: PredictionSummary):
         elif path.risk_level == "Medium": risk_color = "yellow"
         
         # Time Window
-        t_win = f"{path.reaction_time_window.min_seconds}s-{path.reaction_time_window.max_seconds}s"
-        
-        # Evidence snippet
-        # Show specific host names if mentioned
-        ev_snip = path.explainability.positive_evidence[0] if path.explainability.positive_evidence else "None"
-        if len(path.explainability.positive_evidence) > 1:
-             ev_snip += f" (+{len(path.explainability.positive_evidence)-1} more)"
+        t_win = path.time_window_text
         
         table.add_row(
             f"{path.probability:.1%}",
             f"[{risk_color}]{path.risk_level}[/{risk_color}]",
             t_win,
-            seq_str,
-            ev_snip
+            seq_str
         )
         
     console.print(table)
@@ -101,35 +96,50 @@ def main():
     
     # Iterate over sessions from Tool 2
     for session_report in tool2_data:
-        s_id = str(session_report.get("session_id"))
-        risk_score = float(session_report.get("path_anomaly_score", 0.0))
+        s_id = str(session_report.get("session_id", "Unknown Session"))
+        
+        # Resilient score extraction (handles alias names)
+        risk_score = session_report.get("path_anomaly_score")
+        if risk_score is None:
+            risk_score = session_report.get("Score", 0.0)
+        risk_score = float(risk_score)
+        
         blast_radius = session_report.get("blast_radius", [])
+        vuln_summary = session_report.get("vulnerability_summary", [])
         
-        # --- SESSION DIFFERENTIATION LOGIC ---
-        # Infer context from Tool 2 signals to create distinct profiles
-        
-        observed = ["T1078"] # Default: Valid User
-        graph_depth = 1
-        
-        if "u999" in s_id or risk_score > 8.0:
-            # High Risk / Admin -> Likely Brute Force or Lateral Mov
-            observed = ["T1110", "T1078", "T1046"] 
-            graph_depth = 3
-        elif risk_score > 4.0:
-            # Medium Risk -> Suspicious login
-            observed = ["T1110", "T1078"]
-            graph_depth = 2
-        elif len(blast_radius) > 2:
-             # Wide blast radius implies discovery/lateral
-            observed = ["T1078", "T1046"]
-            graph_depth = 2
+        # --- REAL DATA EXTRACTION ---
+        # 1. Use actual techniques detected by Tool 2
+        observed = session_report.get("observed_techniques", [])
+        if not observed:
+            # Check if Tool 2 provided them in a different key or we need to infer from summary
+            vuln_blob = " ".join(vuln_summary).lower()
+            if any(k in vuln_blob for k in ["cache", "comment", "exposure", "info"]):
+                observed = ["T1592"]
+            elif any(k in vuln_blob for k in ["permission", "access", "auth"]):
+                observed = ["T1078"]
+            elif "protection" in vuln_blob:
+                observed = ["T1562"]
+            elif risk_score > 30:
+                observed = ["T1190"]
+            else:
+                observed = ["T1595"]
             
-        # Create State
+        graph_depth = len(observed)
+        
+        # 2. Exhaustive extraction of security identifiers
+        observed_ids = []
+        import re
+        for v_str in vuln_summary:
+            matches = re.findall(r'(CVE-\d{4}-\d+|CWE-\d+)', v_str, re.I)
+            observed_ids.extend(matches)
+
+        # Create State with REAL context
         current_state = CurrentState(
             observed_techniques=observed,
             last_seen_timestamp=datetime.now(timezone.utc),
             graph_depth=graph_depth,
-            host_scope=blast_radius
+            host_scope=blast_radius,
+            observed_vulnerabilities=list(set(observed_ids))
         )
 
         summary = engine.predict(
@@ -138,6 +148,8 @@ def main():
             current_risk=risk_score
         )
         
+        # Avoid duplicate asset noise: Flag if we've seen this trajectory recently
+        # (Simplified: just add to the list)
         forecasts.append(summary.model_dump(mode='json'))
         visualize_forecast(summary)
         

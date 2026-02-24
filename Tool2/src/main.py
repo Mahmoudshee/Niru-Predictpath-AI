@@ -16,7 +16,16 @@ def visualize_path(session, report):
     Key function to render the Directed Temporal Graph in ASCII using Rich.
     """
     # Header
-    console.print(Panel(f"[bold red]CRITICAL ALERT[/bold red]: Session {session.session_id}", subtitle=f"Score: {report.path_anomaly_score:.2f}"))
+    risk_color = "red" if report.business_risk_level == "High" else "yellow" if report.business_risk_level == "Medium" else "green"
+    
+    console.print(Panel(
+        f"[bold {risk_color}]BUSINESS RISK: {report.business_risk_level}[/bold {risk_color}]\n"
+        f"[bold white]WHAT HAPPENED:[/bold white] {report.plain_language_summary}\n\n"
+        f"[dim white]Technical Session: {session.session_id}[/dim white]", 
+        title=f"[bold]EXECUTIVE SUMMARY[/bold]",
+        subtitle=f"Anomaly Score: {report.path_anomaly_score:.2f}",
+        border_style=risk_color
+    ))
     
     # Path Tree
     tree = Tree("[bold yellow]Root Cause (Entry Point)[/bold yellow]")
@@ -58,14 +67,34 @@ def visualize_path(session, report):
     for host in report.blast_radius:
         blast_table.add_row(host)
         
+    # Vulnerability Intelligence Context
+    if report.vulnerability_summary:
+        vuln_table = Table(title="Vulnerability Intelligence Context", show_header=True, header_style="bold magenta")
+        vuln_table.add_column("Observed CVE-ID", style="red")
+        vuln_table.add_column("Risk Context", style="yellow")
+        
+        for vuln in report.vulnerability_summary:
+            if "(" in vuln:
+                name_and_rest = vuln.split(" (", 1)
+                attack_name = name_and_rest[0]
+                details = "(" + name_and_rest[1] if len(name_and_rest) > 1 else ""
+                vuln_table.add_row(attack_name, details)
+            else:
+                vuln_table.add_row(vuln, "")
+        console.print(vuln_table)
+
+    if report.cwe_clusters:
+        cwe_text = ", ".join([f"[bold cyan]{c}[/bold cyan]" for c in report.cwe_clusters])
+        console.print(Panel(cwe_text, title="CWE Taxonomy Clusters", border_style="cyan"))
+
     # Predictions
     pred_text = ""
     for p in report.prediction_vector:
         pred_text += f"[bold blue]{p.next_node}[/bold blue] ({p.probability:.0%}) -> "
-    
+
     console.print(tree)
     console.print(blast_table)
-    console.print(Panel(f"Predicted Trajectory: {pred_text}END", title="AI Forecast"))
+    console.print(Panel(f"Predicted Trajectory: {pred_text}END", title="AI Forecast", border_style="blue"))
     console.print("\n" + "="*50 + "\n")
 
 def main():

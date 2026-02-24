@@ -8,6 +8,7 @@ class CurrentState(BaseModel):
     last_seen_timestamp: datetime
     graph_depth: int
     host_scope: List[str]
+    observed_vulnerabilities: List[str] = []
 
 class ReactionTimeWindow(BaseModel):
     min_seconds: float
@@ -21,8 +22,10 @@ class TrajectoryExplainability(BaseModel):
 class PredictedScenario(BaseModel):
     scenario_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     sequence: List[str] = Field(..., description="Ordered list of predicted MITRE technique IDs")
+    human_readable_sequence: str = ""
     probability: float = Field(..., ge=0.0, le=1.0)
     reaction_time_window: ReactionTimeWindow
+    time_window_text: str = ""
     risk_level: Literal["Low", "Medium", "High", "Critical"]
     scenario_type: Optional[Literal["Primary", "Secondary", "Opportunistic"]] = Field(None, description="Ranking classification")
     explainability: TrajectoryExplainability
@@ -38,6 +41,7 @@ class PredictionSummary(BaseModel):
     current_state: CurrentState
     aggregate_confidence: float = Field(..., ge=0.0, le=1.0)
     predicted_scenarios: List[PredictedScenario]
+    mentor_narrative: str = ""
     model_version: str
     evidence_summary: Dict[str, Any]
     suppression_reason: Optional[str] = None

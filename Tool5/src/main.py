@@ -5,18 +5,19 @@ import logging
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from rich.text import Text
 
-from .engine import ExecutionEngine
-from .domain import ExecutionStatus, ExecutionMode
+from .engine import ScriptGeneratorEngine
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("PredictPath-Tool5")
 console = Console()
 
+
 def load_response_plan(path: str):
     try:
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             return json.load(f)
     except FileNotFoundError:
         logger.error(f"Input file not found: {path}")
@@ -25,73 +26,94 @@ def load_response_plan(path: str):
         logger.error(f"Invalid JSON in file: {path}")
         sys.exit(1)
 
-def visualize_execution_board(report):
-    """
-    Renders the RESPONSE EXECUTION BOARD.
-    """
-    table = Table(title="🛡️ CONTROLLED RESPONSE EXECUTION BOARD 🛡️", show_header=True, header_style="bold white on red")
-    table.add_column("Target", style="cyan")
-    table.add_column("Action", style="bold white")
-    table.add_column("Mode", justify="center")
-    table.add_column("Status", justify="center")
-    table.add_column("Rollback?", justify="center", style="dim white")
-    table.add_column("Details", style="dim")
 
-    for ex in report.executions:
-        mode_style = "dim"
-        if ex.execution_mode == ExecutionMode.AUTO: mode_style = "green bold"
-        elif ex.execution_mode == ExecutionMode.STAGED: mode_style = "yellow"
-        elif ex.execution_mode == ExecutionMode.REJECTED: mode_style = "red"
-        
-        status_style = "white"
-        if ex.final_status == ExecutionStatus.SUCCESS: status_style = "green"
-        elif ex.final_status == ExecutionStatus.PENDING: status_style = "yellow"
-        elif ex.final_status == ExecutionStatus.BLOCKED: status_style = "red"
-        
-        rb = "Yes" if ex.rollback_token else "No"
-        
-        table.add_row(
-            ex.target,
-            ex.action_name,
-            f"[{mode_style}]{ex.execution_mode}[/{mode_style}]",
-            f"[{status_style}]{ex.final_status}[/{status_style}]",
-            rb,
-            ex.message
-        )
-        
-    console.print(table)
-    
-    # Summary Panel
-    stats = report.summary_stats
+def visualize_script_board(report: dict):
+    """Renders the Script Generation Summary Board."""
+
+    # ── Intro panel ─────────────────────────────────────────────────────────
     console.print(Panel(
-        f"[green]Success: {stats['success']}[/green] | [yellow]Pending: {stats['pending']}[/yellow] | [red]Blocked: {stats['blocked']}[/red] | Total: {stats['total']}",
-        title="Execution Summary"
+        "[bold cyan]Tool 5: Remediation Script Generator[/bold cyan]\n"
+        "[white]This tool does NOT execute any commands automatically.[/white]\n"
+        "[dim]It generates a ready-to-run PowerShell script based on the AI decisions from Tool 4.\n"
+        "Download the script, review it, and run it manually as Administrator.[/dim]",
+        title="[bold white]PREDICTPATH AI — SCRIPT GENERATOR[/bold white]",
+        border_style="cyan"
     ))
-    console.print("\n")
+
+    # ── Actions table ────────────────────────────────────────────────────────
+    table = Table(
+        title="GENERATED REMEDIATION ACTIONS",
+        show_header=True,
+        header_style="bold white on dark_blue"
+    )
+    table.add_column("Session", style="cyan", max_width=25)
+    table.add_column("Domain", justify="center", style="bold")
+    table.add_column("Action", style="bold white")
+    table.add_column("Target", style="dim white")
+    table.add_column("Urgency", justify="center")
+    table.add_column("Approval?", justify="center")
+
+    for act in report.get("actions_included", []):
+        domain = act["domain"]
+        domain_style = "green" if domain == "Network" else "yellow" if domain == "Endpoint" else ("cyan" if domain == "Web" else "dim")
+        urgency_style = "red bold" if act["urgency"] == "Critical" else "yellow"
+        approval_text = "[red]YES[/red]" if act["requires_approval"] else "[green]No[/green]"
+
+        table.add_row(
+            act["session_id"][:24],
+            f"[{domain_style}]{domain}[/{domain_style}]",
+            act["action_type"],
+            act["target"],
+            f"[{urgency_style}]{act['urgency']}[/{urgency_style}]",
+            approval_text,
+        )
+
+    console.print(table)
+
+    # ── Script path panel ────────────────────────────────────────────────────
+    script_path = report.get("script_path", "N/A")
+    guideline_path = report.get("guideline_path", "N/A")
+    total = report.get("total_actions", 0)
+    staged = report.get("staged_count", 0)
+
+    console.print(Panel(
+        f"[bold green]Automated Script ready for download:[/bold green]\n"
+        f"[bold white]{script_path}[/bold white]\n\n"
+        f"[bold cyan]Tactical Remediation Guideline (Web/Manual Context):[/bold cyan]\n"
+        f"[bold white]{guideline_path}[/bold white]\n\n"
+        f"[dim]Total actions: {total}  |  Requires manual approval: {staged}[/dim]\n\n"
+        f"[yellow]HOW TO RUN:[/yellow]\n"
+        f"[dim]1. Use the .ps1 script for automated Network/Endpoint tasks.\n"
+        f"2. Follow the .md guideline for Web analysis and manual console steps.[/dim]",
+        title="[bold green]REMEDIATION PACKAGE GENERATED[/bold green]",
+        border_style="green"
+    ))
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Tool 5: Controlled Response Execution Engine")
+    parser = argparse.ArgumentParser(description="Tool 5: Remediation Script Generator")
     parser.add_argument("input_plan", help="Path to Tool 4 output (response_plan.json)")
     parser.add_argument("--output", default="execution_report.json", help="Output path for JSON report")
     args = parser.parse_args()
-    
-    logger.info("Initializing Execution Engine...")
-    engine = ExecutionEngine()
-    
-    logger.info(f"Loading input from {args.input_plan}...")
+
+    logger.info("Initializing Script Generator Engine...")
+    engine = ScriptGeneratorEngine()
+
+    logger.info(f"Loading response plan from {args.input_plan}...")
     plan = load_response_plan(args.input_plan)
-    
-    report = engine.process_plan(plan)
-    
+
+    report = engine.generate(plan)
+
     # Visualize
-    visualize_execution_board(report)
-        
-    # Write Output
+    visualize_script_board(report)
+
+    # Write JSON report
     with open(args.output, "w") as f:
-        f.write(report.model_dump_json(indent=2))
-        
-    logger.info(f"Execution Report written to {args.output}")
-    logger.info(f"Audit Log written to execution_audit.log")
+        json.dump(report, f, indent=2, default=str)
+
+    logger.info(f"Execution report written to {args.output}")
+    logger.info(f"Remediation script: {report['script_path']}")
+
 
 if __name__ == "__main__":
     main()

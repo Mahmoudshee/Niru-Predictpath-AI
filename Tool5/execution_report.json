@@ -1,0 +1,44 @@
+{
+  "script_path": "C:\\Users\\cisco\\Documents\\Niru-Predictpath-AI\\NiRu-predictpath-tools\\Tool5\\deployments\\PredictPath_Remediation_20260223_130654.ps1",
+  "script_filename": "PredictPath_Remediation_20260223_130654.ps1",
+  "guideline_path": "C:\\Users\\cisco\\Documents\\Niru-Predictpath-AI\\NiRu-predictpath-tools\\Tool5\\deployments\\Tactical_Remediation_Guideline_20260223_130654.md",
+  "guideline_filename": "Tactical_Remediation_Guideline_20260223_130654.md",
+  "generated_at": "2026-02-23T13:06:54.185189+00:00",
+  "total_actions": 2,
+  "network_count": true,
+  "endpoint_count": true,
+  "web_count": false,
+  "staged_count": 2,
+  "actions_included": [
+    {
+      "session_id": "Activity on System",
+      "action_type": "Isolate Host",
+      "target": "Unknown",
+      "domain": "Network",
+      "requires_approval": true,
+      "urgency": "Critical",
+      "confidence": 1.0,
+      "mentor_context": "Disruptive mitigation strategy for Activity on System has been initiated to ensure defensive depth. The selected action, 'Isolate Host', targets Host 'Unknown' with an estimated risk reduction of 39.6% across the predicted trajectory. Manual authorization is required before execution due to potential service disruption.",
+      "mitigation_guidelines": [
+        "Disconnect host from all internal and external networks.",
+        "For Cloud/Web assets: Suspend deployment or enable 'Maintenance Mode' in console.",
+        "Scan all other hosts in the same segment for persistence."
+      ]
+    },
+    {
+      "session_id": "Activity on 172.20.192.1",
+      "action_type": "Enable Process Auditing",
+      "target": "Activity on 172.20.192.1",
+      "domain": "Endpoint",
+      "requires_approval": true,
+      "urgency": "Low",
+      "confidence": 0.11,
+      "mentor_context": "Disruptive mitigation strategy for Activity on 172.20.192.1 has been initiated to ensure defensive depth. The selected action, 'Enable Process Auditing', targets User 'Activity on 172.20.192.1' with an estimated risk reduction of 10.0% across the predicted trajectory. Manual authorization is required before execution due to potential service disruption.",
+      "mitigation_guidelines": [
+        "Activate Sysmon or similar tool to track process creation.",
+        "Review command-line arguments for suspicious encoded strings.",
+        "Monitor for unauthorized use of living-off-the-land (LotL) binaries."
+      ]
+    }
+  ]
+}

@@ -41,6 +41,7 @@ const Index = () => {
   // Results state
   const [selectedToolId, setSelectedToolId] = useState<number | null>(null);
   const [jsonData, setJsonData] = useState<Record<string, unknown> | null>(null);
+  const [toolResults, setToolResults] = useState<Record<number, any>>({});
 
   // Governance state
   const [governanceState, setGovernanceState] = useState({
@@ -93,7 +94,7 @@ const Index = () => {
   }, []);
 
   // Fetch Results Helper
-  const fetchToolResult = async (path: string) => {
+  const fetchToolResult = async (path: string, toolId?: number) => {
     try {
       const res = await fetch(`${API_BASE}/api/file?path=${encodeURIComponent(path)}`);
       if (!res.ok) throw new Error("File not found");
@@ -103,6 +104,12 @@ const Index = () => {
       try {
         const parsed = JSON.parse(data.content);
         setJsonData(parsed);
+
+        const targetId = toolId || selectedToolId;
+        if (targetId) {
+          setToolResults(prev => ({ ...prev, [targetId]: parsed }));
+        }
+
         addTerminalLine("success", `Results loaded from ${path}`);
 
         // Sync Governance State if applicable
@@ -129,57 +136,66 @@ const Index = () => {
   // Handle tool execution
   const handleExecuteTool = useCallback(
     (tool: { id: number; name: string; command: string; inputPath: string; outputPath?: string }) => {
-      let fullCommand = tool.command;
-      if (tool.inputPath && !fullCommand.includes(tool.inputPath)) {
-        if (tool.inputPath !== "") {
-          fullCommand = `${fullCommand} "${tool.inputPath}"`;
+      return new Promise<void>((resolve, reject) => {
+        let fullCommand = tool.command;
+        if (tool.inputPath && !fullCommand.includes(tool.inputPath)) {
+          if (tool.inputPath !== "") {
+            fullCommand = `${fullCommand} "${tool.inputPath}"`;
+          }
         }
-      }
 
-      addTerminalLine("command", fullCommand);
-      addTerminalLine("info", `Executing Tool ${tool.id}: ${tool.name}...`);
+        addTerminalLine("command", fullCommand);
+        addTerminalLine("info", `Executing Tool ${tool.id}: ${tool.name}...`);
 
-      setToolStatuses((prev) => ({ ...prev, [tool.id]: "running" }));
-      setSystemStatus("running");
-      setSelectedToolId(tool.id);
-      setJsonData(null); // Clear previous results
+        setToolStatuses((prev) => ({ ...prev, [tool.id]: "running" }));
+        setSystemStatus("running");
+        setSelectedToolId(tool.id);
+        setJsonData(null); // Clear previous results
 
-      const ws = new WebSocket(`${WS_BASE}/ws/run`);
+        const ws = new WebSocket(`${WS_BASE}/ws/run`);
 
-      ws.onopen = () => {
-        ws.send(JSON.stringify({
-          tool_dir: `Tool${tool.id}`,
-          command: fullCommand
-        }));
-      };
+        ws.onopen = () => {
+          ws.send(JSON.stringify({
+            tool_dir: `Tool${tool.id}`,
+            command: fullCommand
+          }));
+        };
 
-      ws.onmessage = (event) => {
-        const msg = event.data;
-        let type: TerminalLine["type"] = "info";
-        if (msg.includes("Error") || msg.includes("Failed")) type = "error";
-        if (msg.includes("Success") || msg.includes("Complete")) type = "success";
+        ws.onmessage = (event) => {
+          const msg = event.data;
+          let type: TerminalLine["type"] = "info";
+          if (msg.includes("Error") || msg.includes("Failed") || msg.includes("✖")) type = "error";
+          if (msg.includes("Success") || msg.includes("Complete") || msg.includes("✅")) type = "success";
 
-        addTerminalLine(type, msg.trim());
-      };
+          addTerminalLine(type, msg.trim());
+        };
 
-      ws.onclose = () => {
-        setToolStatuses((prev) => ({ ...prev, [tool.id]: "complete" }));
-        addTerminalLine("success", `Tool ${tool.id} Execution Finished.`);
-        setSystemStatus("idle");
+        ws.onclose = async (event) => {
+          // Check for error in terminal lines or return code if sent
+          const hasError = terminalLines.some(l => l.type === "error" && l.id.startsWith("line-"));
+          // Note: Simple heuristic. Better would be back-end sending exit code in message.
 
-        // Auto-fetch results if JSON
-        if (tool.outputPath && tool.outputPath.endsWith(".json")) {
-          fetchToolResult(tool.outputPath);
-        }
-      };
+          setToolStatuses((prev) => ({ ...prev, [tool.id]: "complete" }));
+          addTerminalLine("success", `Tool ${tool.id} Execution Finished.`);
+          setSystemStatus("idle");
 
-      ws.onerror = (err) => {
-        addTerminalLine("error", "WebSocket Error: Failed to connect to backend.");
-        setToolStatuses((prev) => ({ ...prev, [tool.id]: "error" }));
-        setSystemStatus("error");
-      };
+          // Auto-fetch results if JSON
+          if (tool.outputPath && tool.outputPath.endsWith(".json")) {
+            await fetchToolResult(tool.outputPath, tool.id);
+          }
+
+          resolve();
+        };
+
+        ws.onerror = (err) => {
+          addTerminalLine("error", "WebSocket Error: Failed to connect to backend.");
+          setToolStatuses((prev) => ({ ...prev, [tool.id]: "error" }));
+          setSystemStatus("error");
+          reject(new Error("WebSocket Error"));
+        };
+      });
     },
-    [addTerminalLine]
+    [addTerminalLine, terminalLines]
   );
 
   // Handle reset
@@ -314,29 +330,39 @@ const Index = () => {
         {layoutDirection === "vertical" ? (
           // MOBILE / TABLET LAYOUT (Stacked)
           <div className="flex-1 flex flex-col overflow-y-auto">
-            {/* CENTER PANEL (Terminal) - TOP */}
-            <div className="w-full min-h-[500px] shrink-0 border-b border-border flex flex-col p-2">
-              <div className="flex-1 min-h-0">
-                <TerminalPanel lines={terminalLines} onClear={handleClearTerminal} />
+            {/* LEFT PANEL (Control) - TOP */}
+            <div className="w-full shrink-0 border-b border-border bg-card/30 flex flex-col">
+              <div className="shrink-0">
+                <FileUploadPanel onFilesReady={handleFilesReady} onClear={handleClearFiles} />
               </div>
-              <div className="mt-2 shrink-0">
-                <GovernanceStatus
-                  trustThreshold={governanceState.trustThreshold}
-                  momentum={governanceState.momentum}
-                  streakCount={governanceState.streakCount}
-                  isConnected={governanceState.isConnected}
+              <div className="h-[350px] overflow-y-auto custom-scrollbar">
+                <PipelineControl
+                  onExecute={handleExecuteTool}
+                  toolStatuses={toolStatuses}
+                  uploadedFiles={uploadedFiles}
+                  toolResults={toolResults}
                 />
               </div>
             </div>
 
-            {/* LEFT PANEL (Control) - MIDDLE */}
-            <div className="w-full min-h-[500px] shrink-0 border-b border-border bg-card/30 flex flex-col">
-              <div className="shrink-0">
-                <FileUploadPanel onFilesReady={handleFilesReady} onClear={handleClearFiles} />
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                <PipelineControl onExecute={handleExecuteTool} toolStatuses={toolStatuses} uploadedFiles={uploadedFiles} />
-              </div>
+            {/* CENTER PANEL (Terminal + Governance) - MIDDLE */}
+            <div className="w-full h-[600px] shrink-0 border-b border-border flex flex-col bg-background">
+              <PanelGroup direction="vertical">
+                <Panel defaultSize={70} minSize={30} className="p-2 pb-1">
+                  <TerminalPanel lines={terminalLines} onClear={handleClearTerminal} />
+                </Panel>
+
+                <PanelResizeHandle className="h-1 bg-border/30 hover:bg-primary/50 transition-colors cursor-row-resize" />
+
+                <Panel defaultSize={30} minSize={10} className="p-2 pt-1">
+                  <GovernanceStatus
+                    trustThreshold={governanceState.trustThreshold}
+                    momentum={governanceState.momentum}
+                    streakCount={governanceState.streakCount}
+                    isConnected={governanceState.isConnected}
+                  />
+                </Panel>
+              </PanelGroup>
             </div>
 
             {/* RIGHT PANEL (Results) - BOTTOM */}
@@ -354,31 +380,43 @@ const Index = () => {
                 <FileUploadPanel onFilesReady={handleFilesReady} onClear={handleClearFiles} />
               </div>
               <div className="flex-1 overflow-y-auto custom-scrollbar">
-                <PipelineControl onExecute={handleExecuteTool} toolStatuses={toolStatuses} uploadedFiles={uploadedFiles} />
-              </div>
-            </Panel>
-
-            <PanelResizeHandle className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
-
-            {/* CENTER PANEL (Terminal) */}
-            <Panel defaultSize={24} minSize={20} className="flex flex-col p-4 border-r border-border min-w-0">
-              <div className="flex-1 min-h-0">
-                <TerminalPanel lines={terminalLines} onClear={handleClearTerminal} />
-              </div>
-              <div className="mt-4 shrink-0">
-                <GovernanceStatus
-                  trustThreshold={governanceState.trustThreshold}
-                  momentum={governanceState.momentum}
-                  streakCount={governanceState.streakCount}
-                  isConnected={governanceState.isConnected}
+                <PipelineControl
+                  onExecute={handleExecuteTool}
+                  toolStatuses={toolStatuses}
+                  uploadedFiles={uploadedFiles}
+                  toolResults={toolResults}
                 />
               </div>
             </Panel>
 
             <PanelResizeHandle className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
 
+            {/* CENTER PANEL (Terminal + Governance) */}
+            <Panel defaultSize={26} minSize={20} className="border-r border-border min-w-0">
+              <PanelGroup direction="vertical">
+                <Panel defaultSize={75} minSize={40} className="flex flex-col p-4 pb-2">
+                  <div className="flex-1 min-h-0">
+                    <TerminalPanel lines={terminalLines} onClear={handleClearTerminal} />
+                  </div>
+                </Panel>
+
+                <PanelResizeHandle className="h-1 bg-border/30 hover:bg-primary/50 transition-colors cursor-row-resize" />
+
+                <Panel defaultSize={25} minSize={10} className="p-4 pt-2 shrink-0">
+                  <GovernanceStatus
+                    trustThreshold={governanceState.trustThreshold}
+                    momentum={governanceState.momentum}
+                    streakCount={governanceState.streakCount}
+                    isConnected={governanceState.isConnected}
+                  />
+                </Panel>
+              </PanelGroup>
+            </Panel>
+
+            <PanelResizeHandle className="w-1 bg-border/50 hover:bg-primary/50 transition-colors" />
+
             {/* RIGHT PANEL (Results) */}
-            <Panel defaultSize={58} minSize={30} className="bg-card/30 backdrop-blur-sm min-w-0">
+            <Panel defaultSize={56} minSize={30} className="bg-card/30 backdrop-blur-sm min-w-0">
               <ResultsPanel selectedToolId={selectedToolId} jsonData={jsonData} />
             </Panel>
 

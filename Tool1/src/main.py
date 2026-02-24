@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 from src.ingestion.auth_lanl import LanlAuthIngestor
 from src.ingestion.net_cicids import CicIdsIngestor
+from src.ingestion.universal import UniversalIngestor
 from src.processing.pipeline import Pipeline
 from src.core.config import settings
 import logging
@@ -13,24 +14,43 @@ logger = logging.getLogger(__name__)
 @app.command()
 def ingest(
     source: Path = typer.Argument(..., help="Path to raw log file", exists=True),
-    type: str = typer.Option(..., "--type", "-t", help="Log type: 'lanl' or 'cicids'"),
-    rate_limit: int = typer.Option(settings.MAX_INGEST_RATE, help="Max events per second")
+    type: str = typer.Option("auto", "--type", "-t", help="Log type: 'lanl', 'cicids', 'universal', or 'auto'"),
+    rate_limit: int = typer.Option(settings.MAX_INGEST_RATE, help="Max events per second"),
+    max_lines: int = typer.Option(1000, "--limit", "-l", help="Maximum lines to ingest")
 ):
     """
     Ingest raw security logs, normalize, enrich, and store them.
+    Handles random files via 'universal' type with runtime schema inference.
     """
-    typer.echo(f"Starting ingestion for {source} as {type}...")
+    source_path = Path(source)
+    extension = source_path.suffix.lower()
     
-    # 1. Select Ingestor
+    # 1. Selection Logic with Auto-Detection Intelligence
     try:
-        if type.lower() == 'lanl':
-            print("Initializing LANL ingestor...")
+        if type.lower() == "auto":
+            # Heuristic: LANL and CICIDS are typically CSV/GZ. Wazuh/Nmap/ZAP are JSON/XML/LOG.
+            if extension in ['.json', '.ndjson', '.log']:
+                target_type = "universal"
+            else:
+                target_type = "universal" # Default to safest
+        else:
+            target_type = type.lower()
+
+        # Sanity Check: If user forces LANL/CICIDS on a JSON file, it WILL fail downstream.
+        if target_type in ['lanl', 'cicids'] and extension in ['.json', '.ndjson']:
+            typer.secho(f"[!] Warning: Type '{target_type}' is usually CSV. Detected {extension} file.", fg=typer.colors.YELLOW)
+            typer.secho(f"[*] Switching to 'universal' ingestor for structural compatibility.", fg=typer.colors.CYAN)
+            target_type = "universal"
+
+        typer.echo(f"[*] Starting ingestion for {source} as {target_type}...")
+
+        if target_type == 'lanl':
             ingestor = LanlAuthIngestor(source)
-        elif type.lower() == 'cicids':
+        elif target_type == 'cicids':
             ingestor = CicIdsIngestor(source)
         else:
-            typer.echo(f"Unknown type: {type}. Supported: lanl, cicids")
-            raise typer.Exit(code=1)
+            # Catch-all for 'universal' or any unrecognized type
+            ingestor = UniversalIngestor(source)
             
         # 2. Configure Pipeline
         print("Initializing Pipeline...")
@@ -39,7 +59,7 @@ def ingest(
         
         # 3. Run
         print("Running Pipeline...")
-        pipeline.run()
+        pipeline.run(max_lines=max_lines)
         print("Pipeline run completed.")
         typer.echo("Ingestion complete. Check output directory for Parquet files.")
     except Exception as e:

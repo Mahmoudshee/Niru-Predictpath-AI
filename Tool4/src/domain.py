@@ -29,6 +29,8 @@ class RecommendedAction(BaseModel):
     action_class: Literal["Containment", "Disruptive"] = "Containment"
     requires_approval: bool = False
     target: ActionTarget
+    vulnerability_details: Dict[str, Any] = Field(default_factory=dict, description="Metadata like max_cvss and is_kev")
+    mitigation_guidelines: List[str] = Field(default_factory=list, description="Step-by-step guidance for the user")
     justification: ActionJustification
     recommended_within_seconds: int
 
@@ -56,4 +58,5 @@ class ResponseDecision(BaseModel):
     recommended_actions: List[RecommendedAction]
     rejected_actions: List[RejectedAction]
     model_version: str
+    mentor_summary: str = ""
     decision_explainability: DecisionExplainability
