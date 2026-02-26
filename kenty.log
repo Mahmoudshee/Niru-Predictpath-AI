@@ -1,0 +1,8 @@
+timestamp,src_user,dst_user,src_host,dst_host,auth_type,protocol,event_type,result
+2026-01-08T09:01:12Z,U101@DOM1,U102@DOM1,WS-01,DC-01,Kerberos,SMB,Logon,Success
+2026-01-08T09:02:44Z,U101@DOM1,U103@DOM1,WS-01,FILE-02,NTLM,SMB,Logon,Success
+2026-01-08T09:04:01Z,U999@DOM1,System,WS-01,DC-01,Kerberos,RPC,PrivilegeChange,Success
+2026-01-08T09:05:18Z,U999@DOM1,U104@DOM1,DC-01,APP-01,Kerberos,SMB,Logon,Success
+2026-01-08T09:06:42Z,U999@DOM1,U105@DOM1,APP-01,DB-01,NTLM,SMB,Logon,Fail
+2026-01-08T09:07:10Z,U999@DOM1,U105@DOM1,APP-01,DB-01,NTLM,SMB,Logon,Success
+kenty
