@@ -1,0 +1,1091 @@
+﻿{
+  "vulnerability": [],
+  "malware_behavior": [
+    {
+      "timestamp": "2026-02-06T11:28:02.606+0300",
+      "rule": {
+        "level": 7,
+        "description": "Integrity checksum changed.",
+        "id": "550",
+        "firedtimes": 1,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_file"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.11"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366482.819186",
+      "full_log": "File 'c:\\windows\\system32\\drivers\\etc\\hosts.ics' modified\nMode: scheduled\nChanged attributes: mtime,md5,sha1,sha256\nOld modification time was: '1770283681', now it is '1770365378'\nOld md5sum was: 'eb9111b320564cea1c33e7d082b2f12e'\nNew md5sum is : 'e2b2bb98cd285508c095932665074cbc'\nOld sha1sum was: 'abe23bb2d0909f8d5501f63397f22a24a8017441'\nNew sha1sum is : '226795f04f0f538aba3e1daf38d237978333fc5f'\nOld sha256sum was: '03efc164341f8d980cc858a68434ee7ed85a99fb5f23e2acf399d7286e47d795'\nNew sha256sum is : '576a6eff369959d21fc9e67e7d3ed85c3f65a45ddcc7f79462b1d5ae8d94d955'\n",
+      "syscheck": {
+        "path": "c:\\windows\\system32\\drivers\\etc\\hosts.ics",
+        "mode": "scheduled",
+        "size_after": "705",
+        "win_perm_after": [
+          {
+            "name": "SYSTEM",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "SYNCHRONIZE",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE",
+              "READ_ATTRIBUTES",
+              "WRITE_ATTRIBUTES"
+            ]
+          },
+          {
+            "name": "Administrators",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "SYNCHRONIZE",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE",
+              "READ_ATTRIBUTES",
+              "WRITE_ATTRIBUTES"
+            ]
+          },
+          {
+            "name": "Users",
+            "allowed": [
+              "READ_CONTROL",
+              "SYNCHRONIZE",
+              "READ_DATA",
+              "READ_EA",
+              "EXECUTE",
+              "READ_ATTRIBUTES"
+            ]
+          },
+          {
+            "name": "ALL APPLICATION PACKAGES",
+            "allowed": [
+              "READ_CONTROL",
+              "SYNCHRONIZE",
+              "READ_DATA",
+              "READ_EA",
+              "EXECUTE",
+              "READ_ATTRIBUTES"
+            ]
+          },
+          {
+            "name": "ALL RESTRICTED APPLICATION PACKAGES",
+            "allowed": [
+              "READ_CONTROL",
+              "SYNCHRONIZE",
+              "READ_DATA",
+              "READ_EA",
+              "EXECUTE",
+              "READ_ATTRIBUTES"
+            ]
+          }
+        ],
+        "uid_after": "S-1-5-18",
+        "md5_before": "eb9111b320564cea1c33e7d082b2f12e",
+        "md5_after": "e2b2bb98cd285508c095932665074cbc",
+        "sha1_before": "abe23bb2d0909f8d5501f63397f22a24a8017441",
+        "sha1_after": "226795f04f0f538aba3e1daf38d237978333fc5f",
+        "sha256_before": "03efc164341f8d980cc858a68434ee7ed85a99fb5f23e2acf399d7286e47d795",
+        "sha256_after": "576a6eff369959d21fc9e67e7d3ed85c3f65a45ddcc7f79462b1d5ae8d94d955",
+        "attrs_after": [
+          "ARCHIVE"
+        ],
+        "uname_after": "SYSTEM",
+        "mtime_before": "2026-02-05T12:28:01",
+        "mtime_after": "2026-02-06T11:09:38",
+        "changed_attributes": [
+          "mtime",
+          "md5",
+          "sha1",
+          "sha256"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_integrity_changed"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:15.602+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Key Integrity Checksum Changed",
+        "id": "594",
+        "firedtimes": 1,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366495.821049",
+      "full_log": "Registry Key '[x64] HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows Defender\\Policy Manager' modified\nMode: scheduled\nChanged attributes: mtime\nOld modification time was: '1770284161', now it is '1770329444'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows Defender\\Policy Manager",
+        "mode": "scheduled",
+        "arch": "[x64]",
+        "win_perm_after": [
+          {
+            "name": "SYSTEM",
+            "allowed": [
+              "GENERIC_ALL",
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "Administrators",
+            "allowed": [
+              "GENERIC_ALL",
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "ALL APPLICATION PACKAGES",
+            "allowed": [
+              "GENERIC_READ",
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681",
+            "allowed": [
+              "GENERIC_READ",
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          }
+        ],
+        "uid_after": "S-1-5-18",
+        "gid_after": "S-1-5-18",
+        "uname_after": "SYSTEM",
+        "gname_after": "SYSTEM",
+        "mtime_before": "2026-02-05T12:36:01",
+        "mtime_after": "2026-02-06T01:10:44",
+        "changed_attributes": [
+          "mtime"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_key_modified"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:16.273+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Key Integrity Checksum Changed",
+        "id": "594",
+        "firedtimes": 2,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366496.822263",
+      "full_log": "Registry Key '[x32] HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows Defender\\Policy Manager' modified\nMode: scheduled\nChanged attributes: mtime\nOld modification time was: '1770284161', now it is '1770329444'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows Defender\\Policy Manager",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "win_perm_after": [
+          {
+            "name": "SYSTEM",
+            "allowed": [
+              "GENERIC_ALL",
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "Administrators",
+            "allowed": [
+              "GENERIC_ALL",
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "ALL APPLICATION PACKAGES",
+            "allowed": [
+              "GENERIC_READ",
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681",
+            "allowed": [
+              "GENERIC_READ",
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          }
+        ],
+        "uid_after": "S-1-5-18",
+        "gid_after": "S-1-5-18",
+        "uname_after": "SYSTEM",
+        "gname_after": "SYSTEM",
+        "mtime_before": "2026-02-05T12:36:01",
+        "mtime_after": "2026-02-06T01:10:44",
+        "changed_attributes": [
+          "mtime"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_key_modified"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:38.303+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Key Integrity Checksum Changed",
+        "id": "594",
+        "firedtimes": 3,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366518.823477",
+      "full_log": "Registry Key '[x32] HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\Accelerometer\\Statistics' modified\nMode: scheduled\nChanged attributes: mtime\nOld modification time was: '1770102660', now it is '1770356413'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\Accelerometer\\Statistics",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "win_perm_after": [
+          {
+            "name": "Users",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "Administrators",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "SYSTEM",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "CREATOR OWNER",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "ALL APPLICATION PACKAGES",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          }
+        ],
+        "uid_after": "S-1-5-18",
+        "gid_after": "S-1-5-18",
+        "uname_after": "SYSTEM",
+        "gname_after": "SYSTEM",
+        "mtime_before": "2026-02-03T10:11:00",
+        "mtime_after": "2026-02-06T08:40:13",
+        "changed_attributes": [
+          "mtime"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_value_modified"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:38.304+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Value Integrity Checksum Changed",
+        "id": "750",
+        "firedtimes": 1,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366518.824824",
+      "full_log": "Registry Value '[x32] HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\Accelerometer\\Statistics\\ShocksDetected' modified\nMode: scheduled\nChanged attributes: md5,sha1,sha256\nOld md5sum was: '89020b11e30688b7fb2ad4ebb25923ef'\nNew md5sum is : '9d3b31392ffac26af49f106f54fb27be'\nOld sha1sum was: 'f83d2e162432700a98d81b58f978ea29b67382aa'\nNew sha1sum is : '0ab252c1340955870343b81db05a113540015e83'\nOld sha256sum was: 'cbb99f5b006399d8f9d3e9f98cd45f724b0cf70b8e243b3e4c4d5b9f323e3b4f'\nNew sha256sum is : 'e3fb79d0c7b2294e0132167552367a659212b9c076a49d80eb5db19380abff24'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\Accelerometer\\Statistics",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "value_name": "ShocksDetected",
+        "value_type": "REG_DWORD",
+        "size_after": "4",
+        "md5_before": "89020b11e30688b7fb2ad4ebb25923ef",
+        "md5_after": "9d3b31392ffac26af49f106f54fb27be",
+        "sha1_before": "f83d2e162432700a98d81b58f978ea29b67382aa",
+        "sha1_after": "0ab252c1340955870343b81db05a113540015e83",
+        "sha256_before": "cbb99f5b006399d8f9d3e9f98cd45f724b0cf70b8e243b3e4c4d5b9f323e3b4f",
+        "sha256_after": "e3fb79d0c7b2294e0132167552367a659212b9c076a49d80eb5db19380abff24",
+        "changed_attributes": [
+          "md5",
+          "sha1",
+          "sha256"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_value_modified"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:38.335+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Key Integrity Checksum Changed",
+        "id": "594",
+        "firedtimes": 4,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366518.825944",
+      "full_log": "Registry Key '[x32] HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\ACPI\\Parameters' modified\nMode: scheduled\nChanged attributes: mtime\nGroup ownership was 'S-1-5-32-544', now it is 'S-1-5-18'\nOld modification time was: '1770271680', now it is '1770365361'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\ACPI\\Parameters",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "win_perm_after": [
+          {
+            "name": "Users",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "Administrators",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "SYSTEM",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "CREATOR OWNER",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "ALL APPLICATION PACKAGES",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          }
+        ],
+        "uid_after": "S-1-5-32-544",
+        "gid_before": "S-1-5-32-544",
+        "gid_after": "S-1-5-18",
+        "uname_after": "Administrators",
+        "gname_after": "SYSTEM",
+        "mtime_before": "2026-02-05T09:08:00",
+        "mtime_after": "2026-02-06T11:09:21",
+        "changed_attributes": [
+          "mtime"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_value_added"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:39.626+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Key Integrity Checksum Changed",
+        "id": "594",
+        "firedtimes": 5,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366519.827351",
+      "full_log": "Registry Key '[x32] HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18' modified\nMode: scheduled\nChanged attributes: mtime\nGroup ownership was 'S-1-5-32-544', now it is 'S-1-5-18'\nOld modification time was: '1770291019', now it is '1770322988'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "win_perm_after": [
+          {
+            "name": "TrustedInstaller",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "WRITE_DAC",
+              "WRITE_OWNER",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA",
+              "EXECUTE"
+            ]
+          },
+          {
+            "name": "SYSTEM",
+            "allowed": [
+              "DELETE",
+              "READ_CONTROL",
+              "READ_DATA",
+              "WRITE_DATA",
+              "APPEND_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "Administrators",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          },
+          {
+            "name": "USER MODE DRIVERS",
+            "allowed": [
+              "READ_CONTROL",
+              "READ_DATA",
+              "READ_EA",
+              "WRITE_EA"
+            ]
+          }
+        ],
+        "uid_after": "S-1-5-32-544",
+        "gid_before": "S-1-5-32-544",
+        "gid_after": "S-1-5-18",
+        "uname_after": "Administrators",
+        "gname_after": "SYSTEM",
+        "mtime_before": "2026-02-05T14:30:19",
+        "mtime_after": "2026-02-05T23:23:08",
+        "changed_attributes": [
+          "mtime"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_key_modified"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:42.028+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Value Integrity Checksum Changed",
+        "id": "750",
+        "firedtimes": 2,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366522.828469",
+      "full_log": "Registry Value '[x32] HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18\\SequenceNumber' modified\nMode: scheduled\nChanged attributes: md5,sha1,sha256\nOld md5sum was: 'a190405ed868a369f278b57e3e308cdf'\nNew md5sum is : 'f04b81699e0693e87464e52986392a9e'\nOld sha1sum was: 'd2d943ef7b0fa6ba89089334614b95c3af6851de'\nNew sha1sum is : 'd34edadd17820c963e4f291bb9f43983fa6ae48d'\nOld sha256sum was: '2defaa5a08e8b48b62371adf38b29c42e29e06c7b9038a31e963235ae10ba7fa'\nNew sha256sum is : '50e500667b328c9c67b41d569e611c81eabbb169eed7baca74e5b68017513938'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "value_name": "SequenceNumber",
+        "value_type": "REG_DWORD",
+        "size_after": "4",
+        "md5_before": "a190405ed868a369f278b57e3e308cdf",
+        "md5_after": "f04b81699e0693e87464e52986392a9e",
+        "sha1_before": "d2d943ef7b0fa6ba89089334614b95c3af6851de",
+        "sha1_after": "d34edadd17820c963e4f291bb9f43983fa6ae48d",
+        "sha256_before": "2defaa5a08e8b48b62371adf38b29c42e29e06c7b9038a31e963235ae10ba7fa",
+        "sha256_after": "50e500667b328c9c67b41d569e611c81eabbb169eed7baca74e5b68017513938",
+        "changed_attributes": [
+          "md5",
+          "sha1",
+          "sha256"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_value_modified"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:42.456+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Value Integrity Checksum Changed",
+        "id": "750",
+        "firedtimes": 3,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_modified",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366522.829596",
+      "full_log": "Registry Value '[x32] HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18\\\\Device\\HarddiskVolume2\\Windows\\System32\\consent.exe' modified\nMode: scheduled\nChanged attributes: md5,sha1,sha256\nOld md5sum was: '7053f70b5540b8cf28bf5ab6804104f3'\nNew md5sum is : 'e29ce3384d72bf4fccf7110330b254e6'\nOld sha1sum was: '6aebab3afbd5cb7963c29e7789ec2b285a6cf8d9'\nNew sha1sum is : '0b94c14e72c3bc6a70f29cf7a424311c6e47bfcf'\nOld sha256sum was: '28156bc06a27dec60ff7f3f72a83b48933a6534f2e0dbce3aedb445ab83309b1'\nNew sha256sum is : '7b19f9ac4809666e687885a2813d9bb22cfb56ed518c8b69018caa5fda8e06c6'\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "value_name": "\\Device\\HarddiskVolume2\\Windows\\System32\\consent.exe",
+        "value_type": "REG_BINARY",
+        "size_after": "24",
+        "md5_before": "7053f70b5540b8cf28bf5ab6804104f3",
+        "md5_after": "e29ce3384d72bf4fccf7110330b254e6",
+        "sha1_before": "6aebab3afbd5cb7963c29e7789ec2b285a6cf8d9",
+        "sha1_after": "0b94c14e72c3bc6a70f29cf7a424311c6e47bfcf",
+        "sha256_before": "28156bc06a27dec60ff7f3f72a83b48933a6534f2e0dbce3aedb445ab83309b1",
+        "sha256_after": "7b19f9ac4809666e687885a2813d9bb22cfb56ed518c8b69018caa5fda8e06c6",
+        "changed_attributes": [
+          "md5",
+          "sha1",
+          "sha256"
+        ],
+        "event": "modified"
+      },
+      "decoder": {
+        "name": "syscheck_registry_value_modified"
+      },
+      "location": "syscheck"
+    },
+    {
+      "timestamp": "2026-02-06T11:28:42.799+0300",
+      "rule": {
+        "level": 5,
+        "description": "Registry Value Entry Added to the System",
+        "id": "752",
+        "firedtimes": 1,
+        "mail": false,
+        "groups": [
+          "ossec",
+          "syscheck",
+          "syscheck_entry_added",
+          "syscheck_registry"
+        ],
+        "pci_dss": [
+          "11.5"
+        ],
+        "gpg13": [
+          "4.13"
+        ],
+        "gdpr": [
+          "II_5.1.f"
+        ],
+        "hipaa": [
+          "164.312.c.1",
+          "164.312.c.2"
+        ],
+        "nist_800_53": [
+          "SI.7"
+        ],
+        "tsc": [
+          "PI1.4",
+          "PI1.5",
+          "CC6.1",
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "001",
+        "name": "windows-cisco",
+        "ip": "172.20.192.1"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366522.830762",
+      "full_log": "Registry Value '[x32] HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18\\\\Device\\HarddiskVolume2\\Program Files (x86)\\AnyDesk\\AnyDesk.exe' added\nMode: scheduled\n",
+      "syscheck": {
+        "path": "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Services\\bam\\State\\UserSettings\\S-1-5-18",
+        "mode": "scheduled",
+        "arch": "[x32]",
+        "value_name": "\\Device\\HarddiskVolume2\\Program Files (x86)\\AnyDesk\\AnyDesk.exe",
+        "value_type": "REG_BINARY",
+        "size_after": "24",
+        "md5_after": "284bb71bff0286dee0fb698d1ebe3b72",
+        "sha1_after": "cec871f47a122dad0e39b74a299f997e855f6d19",
+        "sha256_after": "8e379a0feb9cfabe4b7c4e8ba5872d2cdae21a72f6695c5e35a72adcb9a7bb70",
+        "event": "added"
+      },
+      "decoder": {
+        "name": "syscheck_registry_value_modified"
+      },
+      "location": "syscheck"
+    }]

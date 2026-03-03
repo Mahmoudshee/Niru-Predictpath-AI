@@ -1,0 +1,5 @@
+CVE-2023-4911: Improper input validation in GNU C Library's ld.so allows for local privilege escalation.
+User 'attacker' triggered CVE-2021-44228 (Log4Shell) on host 10.0.0.5.
+System alert: Unauthorized access attempt detected. Pattern matches CVE-2020-1472 (ZeroLogon).
+Attempted SQL Injection matches CWE-89 patterns on web-server-01.
+Credential stuffing attack detected from 192.168.5.10 using stolen NTLM hashes.

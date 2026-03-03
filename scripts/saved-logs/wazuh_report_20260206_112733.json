@@ -1,0 +1,469 @@
+﻿{
+  "vulnerability": [],
+  "malware_behavior": [],
+  "privilege_escalation": [
+    {
+      "timestamp": "2026-02-06T11:27:06.668+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 1,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366426.0",
+      "full_log": "Feb 06 08:26:57 DESKTOP-5GL66I5 sudo[1307]:    kenty : TTY=pts/2 ; PWD=/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools ; USER=root ; COMMAND=/var/ossec/bin/wazuh-control syscheck restart",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Feb 06 08:26:57",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/2",
+        "pwd": "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools",
+        "command": "/var/ossec/bin/wazuh-control syscheck restart"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-02-06T11:27:06.668+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 2,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366426.1121",
+      "full_log": "Feb 06 08:26:58 DESKTOP-5GL66I5 sudo[1324]:    kenty : TTY=pts/2 ; PWD=/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools ; USER=root ; COMMAND=/var/ossec/bin/wazuh-control rootcheck restart",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Feb 06 08:26:58",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/2",
+        "pwd": "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools",
+        "command": "/var/ossec/bin/wazuh-control rootcheck restart"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-02-06T11:27:06.668+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 3,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366426.2626",
+      "full_log": "Feb 06 08:26:58 DESKTOP-5GL66I5 sudo[1345]:    kenty : TTY=pts/2 ; PWD=/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools ; USER=root ; COMMAND=/var/ossec/bin/wazuh-control vulnerability restart",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Feb 06 08:26:58",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/2",
+        "pwd": "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools",
+        "command": "/var/ossec/bin/wazuh-control vulnerability restart"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-02-06T11:27:06.668+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 4,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366426.4139",
+      "full_log": "Feb 06 08:26:58 DESKTOP-5GL66I5 sudo[1366]:    kenty : TTY=pts/2 ; PWD=/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools ; USER=root ; COMMAND=/var/ossec/bin/wazuh-control sca restart",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Feb 06 08:26:58",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/2",
+        "pwd": "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools",
+        "command": "/var/ossec/bin/wazuh-control sca restart"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-02-06T11:27:31.159+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 5,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366451.811731",
+      "full_log": "Feb 06 08:27:30 DESKTOP-5GL66I5 sudo[1676]:    kenty : TTY=pts/2 ; PWD=/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools ; USER=root ; COMMAND=/usr/bin/ls",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Feb 06 08:27:30",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/2",
+        "pwd": "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools",
+        "command": "/usr/bin/ls"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-02-06T11:27:31.160+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 6,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366451.813172",
+      "full_log": "Feb 06 08:27:30 DESKTOP-5GL66I5 sudo[1711]:    kenty : TTY=pts/2 ; PWD=/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools ; USER=root ; COMMAND=/usr/bin/mkdir -p /opt/predictpath",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Feb 06 08:27:30",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/2",
+        "pwd": "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools",
+        "command": "/usr/bin/mkdir -p /opt/predictpath"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-02-06T11:27:31.161+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 7,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1770366451.814659",
+      "full_log": "Feb 06 08:27:30 DESKTOP-5GL66I5 sudo[1715]:    kenty : TTY=pts/2 ; PWD=/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools ; USER=root ; COMMAND=/usr/bin/chmod 777 /opt/predictpath",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Feb 06 08:27:30",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/2",
+        "pwd": "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools",
+        "command": "/usr/bin/chmod 777 /opt/predictpath"
+      },
+      "location": "journald"
+    }
+  ],
+  "persistence": []
+}
