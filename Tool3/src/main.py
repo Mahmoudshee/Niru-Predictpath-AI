@@ -92,6 +92,13 @@ def main():
     logger.info(f"Loading input from {args.input_report}...")
     tool2_data = load_tool2_report(args.input_report)
     
+    if not tool2_data:
+        logger.warning("Input report is empty. Writing empty forecast.")
+        with open(args.output, "w") as f:
+            json.dump([], f, indent=2)
+        logger.info(f"Empty forecast written to {args.output}")
+        sys.exit(0)
+    
     forecasts = []
     
     # Iterate over sessions from Tool 2

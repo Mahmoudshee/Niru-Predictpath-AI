@@ -114,6 +114,13 @@ def main():
     sessions = ingester.load_sessions()
     console.print(f"[bold green]Loaded {len(sessions)} sessions.[/bold green]")
     
+    if not sessions:
+        console.print("[yellow]No sessions found in parquet output. Writing empty report.[/yellow]")
+        with open("path_report.json", "w") as f:
+            json.dump([], f, indent=2)
+        console.print("[bold green]Empty path_report.json written.[/bold green]")
+        sys.exit(0)
+    
     reports = []
     
     for session in sessions:

@@ -1,136 +1,156 @@
-from datetime import datetime
-from typing import Optional, Any
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+"""
+CanonicalEvent Schema - Single Source of Truth for PredictPath AI.
+Production-grade, fully serializable, no strict-mode conflicts.
+"""
+from datetime import datetime, timezone
+from typing import Optional, List, Any
+from dataclasses import dataclass, field, asdict
 import hashlib
 import json
 import uuid
-from enum import Enum
-from .exceptions import SchemaValidationError
 
-class RejectionReason(str, Enum):
-    SCHEMA_VIOLATION = "SchemaViolation"
-    PARSING_ERROR = "ParsingError"
-    ENRICHMENT_FAILURE = "EnrichmentFailure"
-    INTEGRITY_FAILURE = "IntegrityFailure"
-    UNKNOWN = "Unknown"
 
-class RejectionEvent(BaseModel):
+@dataclass
+class CanonicalEvent:
     """
-    Strict schema for rejected events (DLQ).
-    Ensures every failure is accounted for.
+    The authoritative security event structure for PredictPath AI.
+    Using dataclass instead of Pydantic strict-mode to avoid serialization
+    headaches with complex nested types from real-world logs.
     """
-    model_config = ConfigDict(strict=True, frozen=True)
-
-    rejection_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    rejection_reason: RejectionReason
-    raw_source: str
-    source_file: str
-    ingest_timestamp: datetime = Field(default_factory=datetime.utcnow)
-    parser_version: str
-    error_message: str
-
-class EventType(str, Enum):
-    # Semantic Actions (Not Protocols)
-    AuthSuccess = "auth_success"
-    AuthFailure = "auth_failure"
-    ProcessStart = "process_start"
-    NetworkConnect = "network_connect"
-    FileWrite = "file_write"
-    PrivilegeUse = "privilege_use"
-    Unknown = "unknown"
-
-class CanonicalEvent(BaseModel):
-    """
-    The Single Source of Truth for Security Events in PredictPath AI.
-    All raw events must be normalized to this schema.
-    """
-    model_config = ConfigDict(strict=True, frozen=True) # Immutable and strict
-
     # Core Identifiers
-    event_id: str = Field(..., description="Unique UUID for the event")
-    timestamp: datetime = Field(..., description="UTC Timestamp of the event occurrence")
-    
-    # Semantic Fields
-    event_type: str = Field(..., description="High-level semantic event type (e.g. auth_success)")
-    
+    event_id: str
+    timestamp: datetime
+    ingest_timestamp: datetime
+
+    # Semantic Classification
+    event_type: str          # auth_success, auth_failure, network_connect, etc.
+    severity: str            # critical, high, medium, low, info
+
     # Entities
-    source_host: Optional[str] = None
-    target_host: Optional[str] = None
-    user: Optional[str] = None
-    
-    # Network Details
-    protocol: Optional[str] = None
-    port: Optional[int] = Field(None, ge=0, le=65535)
-    
-    # Enrichment
-    mitre_technique: Optional[str] = Field(None, description="MITRE ATT&CK Technique ID (e.g., T1059)")
-    mitre_tactic: Optional[str] = None
-    observed_cve_ids: list[str] = Field(default_factory=list, description="Explicit CVEs mentioned in log text")
-    observed_cwe_ids: list[str] = Field(default_factory=list, description="Explicit CWEs mentioned in log text")
-    
+    source_host: Optional[str]
+    target_host: Optional[str]
+    user: Optional[str]
+    agent_name: Optional[str]
+
+    # Network
+    protocol: Optional[str]
+    port: Optional[int]
+
+    # MITRE ATT&CK Enrichment
+    mitre_technique: Optional[str]      # e.g. T1059
+    mitre_tactic: Optional[str]         # e.g. execution
+    mitre_technique_name: Optional[str] # e.g. Command and Scripting Interpreter
+
+    # Vulnerability Intelligence (from VulnIntel DB)
+    observed_cve_ids: List[str]
+    observed_cwe_ids: List[str]
+    cve_max_cvss: Optional[float]       # Highest CVSS score among observed CVEs
+    cve_severity: Optional[str]         # CRITICAL, HIGH, MEDIUM, LOW
+    is_kev: bool                        # In CISA Known Exploited Vulnerabilities?
+
     # Scoring
-    confidence_score: float = Field(..., ge=0.0, le=1.0, description="Model certainty (0.0-1.0)")
-    data_quality_score: float = Field(..., ge=0.0, le=1.0, description="Data integrity score (0.0-1.0)")
-    
-    # Provenance & Versioning
-    ingest_timestamp: datetime = Field(default_factory=datetime.utcnow)
-    source_file: str = Field(..., description="Source filename or origin")
-    parser_version: str = Field(..., description="Version of the parser used")
-    model_version: str = Field(..., description="Version of the enrichment model used")
-    
-    # Raw Data
-    raw_source: str = Field(..., description="Original raw log line for auditability")
+    confidence_score: float             # 0.0 – 1.0
+    data_quality_score: float           # 0.0 – 1.0
+    risk_score: float                   # Composite: MITRE confidence + CVE score
 
-    # Integrity (Hashing)
-    raw_hash: str = Field(..., description="SHA256 of the raw_source")
-    previous_event_hash: Optional[str] = Field(None, description="Hash of the previous event for chaining")
-    event_hash: Optional[str] = Field(None, description="SHA256 of the canonical event (calculated post-init)")
+    # Provenance
+    source_file: str
+    parser_version: str
+    model_version: str
+    log_category: str                   # wazuh, nmap, zap, syslog, generic, etc.
 
-    @field_validator('timestamp')
+    # Raw Data (for audit trail)
+    raw_source: str
+    raw_hash: str                       # SHA256 of raw_source
+    previous_event_hash: Optional[str]
+    event_hash: Optional[str]           # SHA256 of canonical structure
+
     @classmethod
-    def validate_utc(cls, v: datetime) -> datetime:
-        if v.tzinfo is None:
-            raise SchemaValidationError("Timestamp must be timezone-aware (UTC).")
-        return v
+    def create(
+        cls,
+        event_type: str,
+        timestamp: datetime,
+        source_file: str,
+        parser_version: str,
+        raw_source: str,
+        log_category: str = "generic",
+        source_host: Optional[str] = None,
+        target_host: Optional[str] = None,
+        user: Optional[str] = None,
+        agent_name: Optional[str] = None,
+        protocol: Optional[str] = None,
+        port: Optional[int] = None,
+        mitre_technique: Optional[str] = None,
+        mitre_tactic: Optional[str] = None,
+        mitre_technique_name: Optional[str] = None,
+        observed_cve_ids: Optional[List[str]] = None,
+        observed_cwe_ids: Optional[List[str]] = None,
+        cve_max_cvss: Optional[float] = None,
+        cve_severity: Optional[str] = None,
+        is_kev: bool = False,
+        confidence_score: float = 0.0,
+        data_quality_score: float = 0.0,
+        risk_score: float = 0.0,
+        severity: str = "info",
+        model_version: str = "v1.0",
+        previous_event_hash: Optional[str] = None,
+    ) -> "CanonicalEvent":
+        now = datetime.now(timezone.utc)
+        raw_hash = hashlib.sha256(raw_source.encode("utf-8", errors="replace")).hexdigest()
 
-    def compute_hashes(self, previous_hash: Optional[str] = None) -> 'CanonicalEvent':
-        """
-        Computes raw_hash and event_hash to ensure integrity.
-        Returns a NEW instance since the model is frozen.
-        """
-        # 1. Compute Raw Hash
-        raw_bytes = self.raw_source.encode('utf-8')
-        computed_raw_hash = hashlib.sha256(raw_bytes).hexdigest()
-        
-        # 2. Compute Event Hash (Canonical structure without the hash field itself)
-        # We use a stable JSON representation of the model fields except event_hash
-        model_dict = self.model_dump(exclude={'event_hash'})
+        return cls(
+            event_id=str(uuid.uuid4()),
+            timestamp=timestamp,
+            ingest_timestamp=now,
+            event_type=event_type,
+            severity=severity,
+            source_host=source_host,
+            target_host=target_host,
+            user=user,
+            agent_name=agent_name,
+            protocol=protocol,
+            port=port,
+            mitre_technique=mitre_technique,
+            mitre_tactic=mitre_tactic,
+            mitre_technique_name=mitre_technique_name,
+            observed_cve_ids=observed_cve_ids or [],
+            observed_cwe_ids=observed_cwe_ids or [],
+            cve_max_cvss=cve_max_cvss,
+            cve_severity=cve_severity,
+            is_kev=is_kev,
+            confidence_score=confidence_score,
+            data_quality_score=data_quality_score,
+            risk_score=risk_score,
+            source_file=source_file,
+            parser_version=parser_version,
+            model_version=model_version,
+            log_category=log_category,
+            raw_source=raw_source[:4000],  # Cap at 4KB to avoid huge Parquet rows
+            raw_hash=raw_hash,
+            previous_event_hash=previous_event_hash,
+            event_hash=None,
+        )
+
+    def compute_event_hash(self, previous_hash: Optional[str] = None) -> "CanonicalEvent":
+        """Compute the event chain hash and return a new instance."""
+        d = self.to_dict()
+        d.pop("event_hash", None)
         if previous_hash:
-            model_dict['previous_event_hash'] = previous_hash
-            
-        # Sort keys for deterministic hashing
-        # Handle datetime serialization for consistency
-        canonical_str = json.dumps(model_dict, sort_keys=True, default=str)
-        computed_event_hash = hashlib.sha256(canonical_str.encode('utf-8')).hexdigest()
-        
-        # Return a new object with updated hashes (bypassing validation for the update)
-        return self.model_copy(update={
-            'raw_hash': computed_raw_hash,
-            'event_hash': computed_event_hash,
-            'previous_event_hash': previous_hash
-        })
+            d["previous_event_hash"] = previous_hash
+        canonical_str = json.dumps(d, sort_keys=True, default=str)
+        event_hash = hashlib.sha256(canonical_str.encode("utf-8")).hexdigest()
+        self.event_hash = event_hash
+        self.previous_event_hash = previous_hash
+        return self
 
-    def validate_integrity(self):
-        """Re-computes hashes and verifies they match the stored values."""
-        # Check raw hash
-        computed_raw = hashlib.sha256(self.raw_source.encode('utf-8')).hexdigest()
-        if computed_raw != self.raw_hash:
-             raise SchemaValidationError(f"Integrity Mismatch! Raw hash {self.raw_hash} != {computed_raw}")
-        
-        # Check event hash
-        model_dict = self.model_dump(exclude={'event_hash'})
-        canonical_str = json.dumps(model_dict, sort_keys=True, default=str)
-        computed_event = hashlib.sha256(canonical_str.encode('utf-8')).hexdigest()
-        
-        if computed_event != self.event_hash:
-            raise SchemaValidationError(f"Integrity Mismatch! Event hash {self.event_hash} != {computed_event}")
+    def to_dict(self) -> dict:
+        """Serialize to plain dict, safe for Parquet/JSON storage."""
+        d = asdict(self)
+        # Convert datetimes to ISO strings for Parquet compatibility
+        for k in ("timestamp", "ingest_timestamp"):
+            if isinstance(d[k], datetime):
+                d[k] = d[k].isoformat()
+        # Convert lists to pipe-delimited strings for Parquet columnar storage
+        d["observed_cve_ids"] = "|".join(d.get("observed_cve_ids") or [])
+        d["observed_cwe_ids"] = "|".join(d.get("observed_cwe_ids") or [])
+        return d

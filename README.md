@@ -240,9 +240,14 @@ Remove-Item data/governance.db
 
 1. **Start Backend (Terminal 1)**
    ```powershell
-   cd predictpath-ui
-   .\venv_backend\Scripts\python -m uvicorn backend.main:app --port 8000
-   ```
+      cd cd c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\predictpath-ui\backend
+      .\venv\Scripts\activate
+
+      venv\Scripts\python.exe main.py
+
+      
+
+      ```
 
 2. **Start Frontend (Terminal 2)**
    ```powershell

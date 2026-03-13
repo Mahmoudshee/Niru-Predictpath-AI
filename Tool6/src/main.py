@@ -252,68 +252,79 @@ def process_ingest(file_path: str, t3_path: str = None, t4_path: str = None, out
 
     new_config = learner.process_execution_feedback(report)
 
-    # --- PDF AUDIT GENERATION (Strategic Documentation) ---
-    logger.info("Generating professional Audit PDF...")
+    # --- PDF AUDIT GENERATION (Full Chain) ---
+    logger.info("Generating full-chain Audit PDF from Tools 1-5 outputs...")
     try:
-        # Resolve path to report directory for co-lo discovery
         report_dir = os.path.dirname(os.path.abspath(file_path))
 
-        # Resolve paths to upstream tools (Flexible Discovery)
-        # 1. Explicit path provided via CLI
-        # 2. Co-located with the ingested report (New Run pattern)
-        # 3. Fallback to default centralized Tool3/Tool4 locations
-        
+        # ── Resolve Tool 3 path ───────────────────────────────────────────
         final_t3 = t3_path
         if not final_t3:
-            # Check for co-location
             alt_t3 = os.path.join(report_dir, "trajectory_forecast.json")
             if os.path.exists(alt_t3):
                 final_t3 = alt_t3
             else:
-                # Standard Fallback
                 final_t3 = os.path.normpath(os.path.join(_TOOL6_DIR, "..", "Tool3", "trajectory_forecast.json"))
 
+        # ── Resolve Tool 4 path ───────────────────────────────────────────
         final_t4 = t4_path
         if not final_t4:
-            # Check for co-location
             alt_t4 = os.path.join(report_dir, "response_plan.json")
             if os.path.exists(alt_t4):
                 final_t4 = alt_t4
             else:
-                # Standard Fallback
                 final_t4 = os.path.normpath(os.path.join(_TOOL6_DIR, "..", "Tool4", "response_plan.json"))
 
+        # ── Resolve Tool 1 path (ingestion_summary.json) ─────────────────
+        t1_path = os.path.normpath(os.path.join(_TOOL6_DIR, "..", "Tool1", "ingestion_summary.json"))
+
+        # ── Resolve Tool 2 path (path_report.json) ───────────────────────
+        t2_path = os.path.normpath(os.path.join(_TOOL6_DIR, "..", "Tool2", "path_report.json"))
+
+        logger.info(f"Using Tool1 data: {t1_path}")
+        logger.info(f"Using Tool2 data: {t2_path}")
         logger.info(f"Using Tool3 data: {final_t3}")
         logger.info(f"Using Tool4 data: {final_t4}")
 
+        t1_data = load_json(t1_path, fatal=False) if os.path.exists(t1_path) else {}
+        t2_data = load_json(t2_path, fatal=False) if os.path.exists(t2_path) else []
         t3_data = load_json(final_t3, fatal=False) if os.path.exists(final_t3) else []
         t4_data = load_json(final_t4, fatal=False) if os.path.exists(final_t4) else []
-        
-        if t3_data is None: t3_data = [] # Handle load failure
+
+        if t1_data is None: t1_data = {}
+        if t2_data is None: t2_data = []
+        if t3_data is None: t3_data = []
         if t4_data is None: t4_data = []
 
         # Target directory for PDFs
         final_output_dir = output_dir or os.path.join(_TOOL6_DIR, "deployments")
         os.makedirs(final_output_dir, exist_ok=True)
-        
+
         generator = AuditReportGenerator(final_output_dir)
-        pdf_abs = generator.generate_pdf(t3_data, t4_data, report, new_config)
+        pdf_abs = generator.generate_pdf(
+            tool3_data=t3_data,
+            tool4_data=t4_data,
+            tool5_data=report,
+            tool6_config=new_config,
+            tool1_data=t1_data,
+            tool2_data=t2_data,
+        )
         logger.info(f"Audit PDF generated: {pdf_abs}")
-        
+
         # Convert to relative path for backend API (if possible, fallback to absolute)
         tools_root = os.path.dirname(_TOOL6_DIR)
         try:
             pdf_rel = os.path.relpath(pdf_abs, tools_root).replace("\\", "/")
         except ValueError:
-            # Handle cross-drive paths on Windows
             pdf_rel = pdf_abs
-        
+
         extra_info = {"pdf_audit_path": pdf_rel, "pdf_audit_filename": os.path.basename(pdf_abs)}
     except Exception as e:
         logger.warning(f"Failed to generate Audit PDF: {e}")
         import traceback
         logger.debug(traceback.format_exc())
         extra_info = {}
+
 
     # ── Rich Summary Panel ─────────────────────────────────────────────
     console.print(Panel(

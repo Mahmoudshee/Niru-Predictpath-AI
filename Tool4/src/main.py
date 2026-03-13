@@ -121,6 +121,13 @@ def main():
     logger.info(f"Loading input from {args.input_forecast}...")
     forecasts = load_tool3_forecast(args.input_forecast)
     
+    if not forecasts:
+        logger.warning("Input forecast is empty. Writing empty response plan.")
+        with open(args.output, "w") as f:
+            json.dump([], f, indent=2)
+        logger.info(f"Empty response plan written to {args.output}")
+        sys.exit(0)
+    
     decisions = []
     
     # Phase 0: Analyze Correlations

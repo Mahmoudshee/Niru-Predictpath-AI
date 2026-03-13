@@ -65,6 +65,18 @@ class DataIngester:
 
         df = df.sort("timestamp")
         
+        # Cast timestamp to datetime if it came in as a string (Tool 1 writes ISO strings)
+        if df["timestamp"].dtype == pl.Utf8 or df["timestamp"].dtype == pl.String:
+            df = df.with_columns(
+                pl.col("timestamp").str.strptime(pl.Datetime("us", "UTC"), "%+", strict=False)
+                  .alias("timestamp")
+            )
+        elif df["timestamp"].dtype in (pl.Datetime("us"), pl.Datetime("ms"), pl.Datetime("ns")):
+            # Localize to UTC if no timezone present
+            df = df.with_columns(
+                pl.col("timestamp").dt.replace_time_zone("UTC").alias("timestamp")
+            )
+        
         # State-Aware Sessionization
         # We define a session as: Same user, events within 60 min gap
         # Polars dynamic grouping can handle this.
@@ -88,8 +100,19 @@ class DataIngester:
         ])
         
         # 4. Mark start of new session if time_diff > window (60m)
+        #    fill_null with a large duration (first event in each group has null diff)
         df = df.with_columns(
-            (pl.col("time_diff").fill_null(pl.duration(days=365)) > pl.duration(minutes=60)).cum_sum().over("surrogate_id").alias("session_group_id")
+            pl.when(pl.col("time_diff").is_null())
+              .then(pl.duration(days=365))   # First event → always starts a new session
+              .otherwise(pl.col("time_diff"))
+              .alias("time_diff_filled")
+        )
+        df = df.with_columns(
+            (pl.col("time_diff_filled") > pl.duration(minutes=60))
+              .cast(pl.Int32)
+              .cum_sum()
+              .over("surrogate_id")
+              .alias("session_group_id")
         )
         
         # 5. Create unique session ID (Human Friendly for the Mentor)

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { motion } from "framer-motion";
 import { CockpitHeader } from "@/components/cockpit/CockpitHeader";
@@ -8,48 +8,34 @@ import { ResultsPanel } from "@/components/cockpit/ResultsPanel";
 import { GovernanceStatus } from "@/components/cockpit/GovernanceStatus";
 import { FileUploadPanel, UploadedFile } from "@/components/cockpit/FileUploadPanel";
 import { ResetLevel } from "@/components/cockpit/ResetControls";
+import { useAppStore } from "@/store/useAppStore";
 
 type ToolStatus = "idle" | "running" | "complete" | "error";
 
-const WS_BASE = "ws://localhost:8000";
-const API_BASE = "http://localhost:8000";
+const WS_BASE = `ws://${window.location.host}`;
+const API_BASE = "";
 
 const Index = () => {
-  // Pipeline state
-  const [toolStatuses, setToolStatuses] = useState<Record<number, ToolStatus>>({});
-  const [systemStatus, setSystemStatus] = useState<"idle" | "running" | "error">("idle");
-
-  // Uploaded files state
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-
-  // Terminal state
-  const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([
-    {
-      id: "init-1",
-      type: "info",
-      content: "PredictPath AI Command Cockpit initialized",
-      timestamp: new Date(),
-    },
-    {
-      id: "init-2",
-      type: "info",
-      content: "Connected to Orchestration Backend.",
-      timestamp: new Date(),
-    },
-  ]);
-
-  // Results state
-  const [selectedToolId, setSelectedToolId] = useState<number | null>(null);
-  const [jsonData, setJsonData] = useState<Record<string, unknown> | null>(null);
-  const [toolResults, setToolResults] = useState<Record<number, any>>({});
-
-  // Governance state
-  const [governanceState, setGovernanceState] = useState({
-    trustThreshold: null as number | null,
-    momentum: null as "rising" | "falling" | "stable" | null,
-    streakCount: null as number | null,
-    isConnected: true,
-  });
+  const {
+    techToolStatuses: toolStatuses,
+    setTechToolStatuses: setToolStatuses,
+    techSystemStatus: systemStatus,
+    setTechSystemStatus: setSystemStatus,
+    techUploadedFiles: uploadedFiles,
+    setTechUploadedFiles: setUploadedFiles,
+    techTerminalLines: terminalLines,
+    setTechTerminalLines: setTerminalLines,
+    addTechTerminalLine: addTerminalLine,
+    techToolResults: toolResults,
+    setTechToolResults: setToolResults,
+    techSelectedToolId: selectedToolId,
+    setTechSelectedToolId: setSelectedToolId,
+    techJsonData: jsonData,
+    setTechJsonData: setJsonData,
+    techGovernanceState: governanceState,
+    setTechGovernanceState: setGovernanceState,
+    resetTechState,
+  } = useAppStore();
 
   // Responsive Layout Direction
   const [layoutDirection, setLayoutDirection] = useState<"horizontal" | "vertical">("horizontal");
@@ -66,20 +52,6 @@ const Index = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  // Add line to terminal
-  const addTerminalLine = useCallback(
-    (type: TerminalLine["type"], content: string) => {
-      const newLine: TerminalLine = {
-        id: `line-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        type,
-        content,
-        timestamp: new Date(),
-      };
-      setTerminalLines((prev) => [...prev, newLine]);
-    },
-    []
-  );
 
   // Clear terminal
   const handleClearTerminal = useCallback(() => {
@@ -133,6 +105,24 @@ const Index = () => {
     }
   };
 
+  // Setup Kill Switch Ref
+  const isAbortedRef = useRef(false);
+
+  const handleKillAll = useCallback(async () => {
+    isAbortedRef.current = true;
+    addTerminalLine("command", ">>> KILL SWITCH ACTIVATED <<<");
+    addTerminalLine("warning", "Terminating all active processes...");
+    try {
+      const res = await fetch(`${API_BASE}/api/kill-all`, { method: "POST" });
+      const data = await res.json();
+      addTerminalLine("warning", data.message || "All processes terminated.");
+    } catch (e) {
+      addTerminalLine("error", "Failed to contact Kill Switch backend");
+    }
+    setSystemStatus("idle");
+  }, [addTerminalLine]);
+
+
   // Handle tool execution
   const handleExecuteTool = useCallback(
     (tool: { id: number; name: string; command: string; inputPath: string; outputPath?: string }) => {
@@ -152,6 +142,8 @@ const Index = () => {
         setSelectedToolId(tool.id);
         setJsonData(null); // Clear previous results
 
+        let exitCode: number | null = null;
+
         const ws = new WebSocket(`${WS_BASE}/ws/run`);
 
         ws.onopen = () => {
@@ -162,25 +154,54 @@ const Index = () => {
         };
 
         ws.onmessage = (event) => {
-          const msg = event.data;
+          const msg: string = event.data;
+
+          // Parse exit code from backend sentinel line
+          const exitMatch = msg.match(/\[Process exited with code (\d+)\]/);
+          if (exitMatch) {
+            exitCode = parseInt(exitMatch[1], 10);
+          }
+
+          // Classify line type — only flag REAL fatal failures
           let type: TerminalLine["type"] = "info";
-          if (msg.includes("Error") || msg.includes("Failed") || msg.includes("✖")) type = "error";
-          if (msg.includes("Success") || msg.includes("Complete") || msg.includes("✅")) type = "success";
+          const upper = msg.toUpperCase();
+
+          // Success indicators
+          if (msg.includes("✅") || msg.includes("PASS") || msg.includes("COMPLETE")) {
+            type = "success";
+          // Fatal error indicators — NOT warnings/info logs
+          } else if (
+            upper.includes("TRACEBACK") ||
+            upper.includes("EXCEPTION") ||
+            upper.includes("FATAL") ||
+            upper.includes("BACKEND ERROR") ||
+            upper.startsWith("ERROR:") ||
+            msg.includes("[Process exited with code 1]") ||
+            msg.includes("[Process exited with code 2]")
+          ) {
+            type = "error";
+          } else if (msg.includes("WARNING") || msg.includes("⚠")) {
+            type = "warning";
+          }
 
           addTerminalLine(type, msg.trim());
         };
 
-        ws.onclose = async (event) => {
-          // Check for error in terminal lines or return code if sent
-          const hasError = terminalLines.some(l => l.type === "error" && l.id.startsWith("line-"));
-          // Note: Simple heuristic. Better would be back-end sending exit code in message.
+        ws.onclose = async () => {
+          const succeeded = exitCode === 0 || exitCode === null;
 
-          setToolStatuses((prev) => ({ ...prev, [tool.id]: "complete" }));
-          addTerminalLine("success", `Tool ${tool.id} Execution Finished.`);
+          if (succeeded) {
+            setToolStatuses((prev) => ({ ...prev, [tool.id]: "complete" }));
+            addTerminalLine("success", `✅ Tool ${tool.id} Execution Finished.`);
+          } else {
+            setToolStatuses((prev) => ({ ...prev, [tool.id]: "error" }));
+            addTerminalLine("error", `✖ Tool ${tool.id} exited with code ${exitCode}.`);
+          }
           setSystemStatus("idle");
 
-          // Auto-fetch results if JSON
-          if (tool.outputPath && tool.outputPath.endsWith(".json")) {
+          // Auto-fetch results if JSON — wait 1.5s so the file is fully written
+          if (tool.outputPath && tool.outputPath.endsWith(".json") && succeeded) {
+            await new Promise(r => setTimeout(r, 1500));
             await fetchToolResult(tool.outputPath, tool.id);
           }
 
@@ -195,12 +216,13 @@ const Index = () => {
         };
       });
     },
-    [addTerminalLine, terminalLines]
+    [addTerminalLine, fetchToolResult]
   );
 
   // Handle reset
   const handleReset = useCallback(
     async (level: ResetLevel) => {
+      resetTechState();
       setTerminalLines([
         {
           id: `reset-${Date.now()}`,
@@ -323,6 +345,7 @@ const Index = () => {
       <CockpitHeader
         onReset={handleReset}
         onSyncIntel={handleSyncIntel}
+        onKillAll={handleKillAll}
         systemStatus={systemStatus}
       />
 
@@ -338,6 +361,9 @@ const Index = () => {
               <div className="h-[350px] overflow-y-auto custom-scrollbar">
                 <PipelineControl
                   onExecute={handleExecuteTool}
+                  onKillAll={handleKillAll}
+                  isAborted={() => isAbortedRef.current}
+                  resetKillSwitch={() => { isAbortedRef.current = false; }}
                   toolStatuses={toolStatuses}
                   uploadedFiles={uploadedFiles}
                   toolResults={toolResults}
@@ -382,6 +408,9 @@ const Index = () => {
               <div className="flex-1 overflow-y-auto custom-scrollbar">
                 <PipelineControl
                   onExecute={handleExecuteTool}
+                  onKillAll={handleKillAll}
+                  isAborted={() => isAbortedRef.current}
+                  resetKillSwitch={() => { isAbortedRef.current = false; }}
                   toolStatuses={toolStatuses}
                   uploadedFiles={uploadedFiles}
                   toolResults={toolResults}

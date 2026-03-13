@@ -17,8 +17,8 @@ if (-not (Test-Path $zapBat)) {
 # -------------------------
 # Log Directory (SAFE PATH BUILDING)
 # -------------------------
-$baseDir = "C:\Users\cisco\Documents\Niru-Predictpath-AI"
-$toolsDir = Join-Path $baseDir "NiRu-predictpath-tools"
+$baseDir = "C:\Users\cisco\Documents\pushing_Niru_codes"
+$toolsDir = Join-Path $baseDir "Niru-Predictpath-AI"
 $reportDir = Join-Path $toolsDir "scripts\saved-logs"
 
 if (-not (Test-Path $reportDir)) {

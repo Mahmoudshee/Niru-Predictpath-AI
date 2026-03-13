@@ -52,7 +52,7 @@ export const GovernanceStatus = ({
   const fetchLive = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/tool6/status");
+      const res = await fetch("/api/tool6/status");
       if (res.ok) {
         const data = await res.json();
         if (!data.error) {

@@ -174,7 +174,7 @@ logs/
 
 ```powershell
 # 1. Navigate to project root
-cd c:\Users\cisco\Documents\Niru-Predictpath-AI\NiRu-predictpath-tools
+cd c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI
 
 # 2. Create log directories (auto-created by scripts)
 New-Item -ItemType Directory -Path "logs\nmap", "logs\openvas", "logs\nikto", "logs\nuclei" -Force

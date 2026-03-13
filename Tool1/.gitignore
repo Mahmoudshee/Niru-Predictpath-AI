@@ -161,13 +161,18 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# --- Tool1 Specific Data ---
-data/
-uploads/
-models/
-output/
-samples/
-dlq/
-ingestion/
-processing/
-storage/
+# --- Tool1 Specific Data (runtime output only, NOT source code) ---
+# Ignore data output directories
+data/output/
+data/dlq/
+data/models/
+data/uploads/
+data/samples/
+
+# Ignore root-level generated data dirs (legacy paths)
+/uploads/
+/output/
+/samples/
+/dlq/
+
+# Do NOT ignore src/ingestion, src/processing, src/storage - those are SOURCE CODE

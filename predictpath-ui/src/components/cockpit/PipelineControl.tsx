@@ -12,6 +12,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   ChevronRight,
+  Octagon,
+  Square,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +56,7 @@ const tools: ToolConfig[] = [
     name: "Ingest Events",
     description: "Unified Event Intelligence Engine",
     icon: Database,
-    command: ".\\.venv\\Scripts\\python.exe -m src.main ingest",
+    command: ".\\.venv\\Scripts\\python.exe run_tool1.py",
     inputPath: "[uploaded_log_files]",
     outputPath: "Tool1/ingestion_summary.json",
     isAuto: false,
@@ -117,12 +119,23 @@ type ToolStatus = "idle" | "running" | "complete" | "error";
 interface PipelineControlProps {
   onExecute: (tool: ToolConfig) => Promise<void>;
   onExecuteMany?: (tools: ToolConfig[]) => Promise<void>;
+  onKillAll?: () => void;
+  isAborted?: () => boolean;
+  resetKillSwitch?: () => void;
   toolStatuses: Record<number, ToolStatus>;
   uploadedFiles?: UploadedFile[];
   toolResults?: Record<number, any>;
 }
 
-export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [], toolResults = {} }: PipelineControlProps) => {
+export const PipelineControl = ({ 
+  onExecute, 
+  onKillAll,
+  isAborted,
+  resetKillSwitch,
+  toolStatuses, 
+  uploadedFiles = [], 
+  toolResults = {} 
+}: PipelineControlProps) => {
   const [confirmTool, setConfirmTool] = useState<ToolConfig | null>(null);
 
   const getStatusIcon = (status: ToolStatus) => {
@@ -152,16 +165,24 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [], t
   };
 
   const handleToolClick = async (tool: ToolConfig) => {
+    if (resetKillSwitch) resetKillSwitch();
+
     // Inject dynamic input path from uploaded files for Tool 1
-    if (tool.id === 1 && uploadedFiles.length > 0) {
+    if (tool.id === 1) {
+      if (uploadedFiles.length === 0) {
+        alert("Please upload a log file first using the File Upload panel.");
+        return;
+      }
+      // Use the first uploaded file — serverPath is now an absolute path from backend
       const file = uploadedFiles[0];
       const path = file.serverPath || file.name;
 
-      const fullCmd = `${tool.command} "${path}" --type lanl`;
+      // run_tool1.py takes path as positional arg directly
+      const fullCmd = `.\\.venv\\Scripts\\python.exe run_tool1.py "${path}"`;
       const execTool = {
         ...tool,
         command: fullCmd,
-        inputPath: "" // Prevent Index.tsx from appending
+        inputPath: ""
       };
       await onExecute(execTool);
       return;
@@ -181,16 +202,33 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [], t
     }
   };
 
+  /** Auto-select the right Tool 1 ingestor based on file extension */
+  const getIngestType = (filename: string): string => {
+    const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+    if (ext === 'xml') return 'universal';    // Nmap XML
+    if (ext === 'json' || ext === 'ndjson') return 'universal'; // Wazuh / ZAP JSON
+    if (ext === 'log') return 'universal';    // Generic logs
+    if (ext === 'csv' || ext === 'gz' || ext === 'txt') return 'lanl'; // LANL auth CSV
+    return 'universal'; // Safe default
+  };
+
   const handleRunFullPipeline = async () => {
     if (uploadedFiles.length === 0) return;
+    
+    if (resetKillSwitch) resetKillSwitch();
 
     for (const tool of tools) {
+      if (isAborted && isAborted()) {
+        console.log("Pipeline aborted by Kill Switch");
+        break;
+      }
       // Prepare tool with correct command if needed
       let execTool = { ...tool };
       if (tool.id === 1) {
         const file = uploadedFiles[0];
         const path = file.serverPath || file.name;
-        execTool.command = `${tool.command} "${path}" --type lanl`;
+        const ingestType = getIngestType(file.name);
+        execTool.command = `${tool.command} "${path}" --type ${ingestType}`;
         execTool.inputPath = "";
       }
 
@@ -200,6 +238,11 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [], t
       } catch (e) {
         console.error(`Pipeline failed at Tool ${tool.id}`, e);
         break; // Stop on error
+      }
+      
+      if (isAborted && isAborted()) {
+        console.log("Pipeline aborted unconditionally by Kill Switch");
+        break;
       }
     }
   };
@@ -222,7 +265,8 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [], t
 
           let displayCommand = tool.command;
           if (tool.id === 1 && uploadedFiles.length > 0) {
-            displayCommand = `${tool.command} "${uploadedFiles[0].serverPath || uploadedFiles[0].name}" --type lanl`;
+            const f = uploadedFiles[0];
+            displayCommand = `${tool.command} "${f.serverPath || f.name}" --type ${getIngestType(f.name)}`;
           } else {
             displayCommand = `${tool.command} "${tool.inputPath}"`;
           }
@@ -328,22 +372,28 @@ export const PipelineControl = ({ onExecute, toolStatuses, uploadedFiles = [], t
                   {/* Status & Action */}
                   <div className="flex items-center gap-2">
                     {getStatusIcon(status)}
-                    <Button
-                      size="sm"
-                      variant={tool.isDestructive ? "destructive" : tool.isScriptGen ? "default" : "default"}
-                      disabled={isDisabled}
-                      onClick={() => handleToolClick(tool)}
-                      className="h-8 px-3"
-                    >
-                      {status === "running" ? (
-                        "Running..."
-                      ) : (
-                        <>
-                          <Play className="h-3 w-3 mr-1" />
-                          Run
-                        </>
-                      )}
-                    </Button>
+                    {status === "running" ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onKillAll?.()}
+                        className="h-8 px-3 bg-red-500/10 hover:bg-red-500/20 border-red-500/50 text-red-500"
+                      >
+                        <Square className="h-3 w-3 mr-1 fill-current" />
+                        Stop
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant={tool.isDestructive ? "destructive" : tool.isScriptGen ? "default" : "default"}
+                        disabled={isDisabled}
+                        onClick={() => handleToolClick(tool)}
+                        className="h-8 px-3"
+                      >
+                        <Play className="h-3 w-3 mr-1" />
+                        Run
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

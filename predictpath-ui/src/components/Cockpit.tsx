@@ -6,9 +6,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
-// Backend URL
-const API_BASE = "http://localhost:8000";
-const WS_BASE = "ws://localhost:8000";
+const API_BASE = "";
+const WS_BASE = `ws://${window.location.host}`;
 
 export function Cockpit() {
     const [activeTool, setActiveTool] = useState<string | null>(null);

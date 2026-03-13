@@ -22,7 +22,7 @@
 $ErrorActionPreference = "Stop"
 
 # Configuration
-$LocalLogPath = "C:\Users\cisco\Documents\Niru-Predictpath-AI\NiRu-predictpath-tools\scripts\saved-logs\wazuh_final_report.json"
+$LocalLogPath = "C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\saved-logs\wazuh_final_report.json"
 $LinuxReportPath = "/opt/predictpath/final_report.json"
 $ScanStartFlag = "/opt/predictpath/wazuh_scan_start.txt"
 $WslPass = "kenty1234" # Per user request for local dev environment
@@ -144,11 +144,11 @@ echo '__PASS__' | sudo -S chmod 644 /opt/predictpath/final_report.json
 $BashScript = $BashScriptTemplate.Replace("__PASS__", $WslPass).Replace("__FLAG__", $ScanStartFlag)
 
 # Write Bash script to local temp file (force LF line endings for Linux)
-$TempBashPath = "C:\Users\cisco\Documents\Niru-Predictpath-AI\NiRu-predictpath-tools\scripts\wazuh_filter.sh"
+$TempBashPath = "C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\wazuh_filter.sh"
 [IO.File]::WriteAllText($TempBashPath, $BashScript.Replace("`r`n", "`n"))
 
 # Convert local path to WSL path
-$WslScriptPath = "/mnt/c/Users/cisco/Documents/Niru-Predictpath-AI/NiRu-predictpath-tools/scripts/wazuh_filter.sh"
+$WslScriptPath = "/mnt/c/Users/cisco/Documents/pushing_Niru_codes/Niru-Predictpath-AI/scripts/wazuh_filter.sh"
 
 # Execute inside WSL using bash directly (avoids systemd user session issues)
 Write-Host "    Executing filter script inside WSL..."

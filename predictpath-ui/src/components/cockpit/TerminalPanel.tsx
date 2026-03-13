@@ -8,7 +8,7 @@ interface TerminalLine {
   id: string;
   type: "command" | "stdout" | "stderr" | "info" | "success" | "warning" | "error";
   content: string;
-  timestamp: Date;
+  timestamp: Date | string;
 }
 
 interface TerminalPanelProps {
@@ -72,7 +72,7 @@ export const TerminalPanel = ({ lines, onClear }: TerminalPanelProps) => {
 
   const handleExport = () => {
     const text = lines
-      .map((l) => `[${l.timestamp.toISOString()}] [${l.type.toUpperCase()}] ${l.content}`)
+      .map((l) => `[${new Date(l.timestamp).toISOString()}] [${l.type.toUpperCase()}] ${l.content}`)
       .join("\n");
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -150,7 +150,7 @@ export const TerminalPanel = ({ lines, onClear }: TerminalPanelProps) => {
                   {getLinePrefix(line.type)}
                 </span>
                 <span className="opacity-30 text-[10px] shrink-0">
-                  {line.timestamp.toLocaleTimeString()}
+                  {new Date(line.timestamp).toLocaleTimeString()}
                 </span>
                 <span className="break-all">{line.content}</span>
               </motion.div>

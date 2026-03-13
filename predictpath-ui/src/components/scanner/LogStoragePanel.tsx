@@ -19,7 +19,7 @@ interface LogStoragePanelProps {
     refreshTrigger?: number;
 }
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
 
 export const LogStoragePanel = ({ refreshTrigger }: LogStoragePanelProps) => {
     const [logs, setLogs] = useState<ScanLog[]>([]);

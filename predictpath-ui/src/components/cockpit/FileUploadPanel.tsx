@@ -16,7 +16,7 @@ interface FileUploadPanelProps {
   onClear: () => void;
 }
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
 
 export const FileUploadPanel = ({ onFilesReady, onClear }: FileUploadPanelProps) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);

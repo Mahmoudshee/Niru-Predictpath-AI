@@ -102,6 +102,26 @@ def main():
     logger.info(f"Loading response plan from {args.input_plan}...")
     plan = load_response_plan(args.input_plan)
 
+    if not plan:
+        logger.warning("Response plan is empty. Writing empty execution report.")
+        empty_report = {
+            "script_path": "",
+            "script_filename": "",
+            "guideline_path": "",
+            "guideline_filename": "",
+            "generated_at": "",
+            "total_actions": 0,
+            "network_count": False,
+            "endpoint_count": False,
+            "web_count": False,
+            "staged_count": 0,
+            "actions_included": [],
+        }
+        with open(args.output, "w") as f:
+            json.dump(empty_report, f, indent=2)
+        logger.info(f"Empty execution report written to {args.output}")
+        sys.exit(0)
+
     report = engine.generate(plan)
 
     # Visualize

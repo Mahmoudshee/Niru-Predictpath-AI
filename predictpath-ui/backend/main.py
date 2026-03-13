@@ -28,6 +28,8 @@ TOOLS_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")
 UPLOADS_DIR = os.path.join(TOOLS_ROOT, "scripts", "saved-logs")
 SCAN_HISTORY_FILE = os.path.join(TOOLS_ROOT, "predictpath-ui", "backend", "scan_history.json")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
+ACTIVE_SCAN_PROCESS = None
+ACTIVE_TOOL_PROCESSES = set()
 
 class ToolRunRequest(BaseModel):
     tool_name: str
@@ -50,7 +52,9 @@ async def upload_file(file: UploadFile = File(...)):
         file_path = os.path.join(UPLOADS_DIR, file.filename)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        return {"filename": file.filename, "path": f"data/uploads/{file.filename}"}
+        # Return ABSOLUTE path so Tool1 can always find the file regardless of cwd
+        abs_path = os.path.abspath(file_path)
+        return {"filename": file.filename, "path": abs_path, "serverPath": abs_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -142,49 +146,118 @@ async def reset_system(request: ResetRequest):
 @app.websocket("/ws/run")
 async def websocket_run(websocket: WebSocket):
     await websocket.accept()
+    proc = None
     try:
         data = await websocket.receive_json()
-        tool_dir = data.get("tool_dir")
-        command_str = data.get("command")
-        
+        tool_dir = data.get("tool_dir", "")
+        command_str = data.get("command", "")
+
         cwd = os.path.join(TOOLS_ROOT, tool_dir)
-        
+
         await websocket.send_text(f"> cd {tool_dir}\n")
         await websocket.send_text(f"> {command_str}\n")
-        
-        # FORCE UTF-8 ENCODING for Subprocess
+
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
-        # Also try to disable Rich legacy windows renderer if possible, or force color system
-        # env["TERM"] = "xterm-256color" 
-        
-        process = await asyncio.create_subprocess_shell(
+        env["PYTHONUTF8"] = "1"
+
+        # On Windows, asyncio.create_subprocess_shell is unreliable inside uvicorn's
+        # ProactorEventLoop. Use Popen + run_in_executor (thread-based) instead.
+        loop = asyncio.get_event_loop()
+
+        proc = subprocess.Popen(
             command_str,
+            shell=True,
             cwd=cwd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=env
+            stderr=subprocess.STDOUT,   # Merge stderr → stdout, no deadlock
+            env=env,
         )
         
-        async def stream_output(stream):
-            while True:
-                line = await stream.readline()
-                if not line:
-                    break
-                decoded = line.decode('utf-8', errors='replace')
-                await websocket.send_text(decoded)
+        ACTIVE_TOOL_PROCESSES.add(proc)
 
-        await asyncio.gather(
-            stream_output(process.stdout),
-            stream_output(process.stderr)
-        )
-        await process.wait()
-        await websocket.send_text(f"\n[Process exited with code {process.returncode}]")
-        await websocket.close()
-        
+        # Read output line-by-line in thread executor (non-blocking for event loop)
+        def _readline() -> bytes:
+            if proc and proc.stdout:
+                res = proc.stdout.readline()
+                return res if isinstance(res, bytes) else b""
+            return b""
+
+        while True:
+            line = await loop.run_in_executor(None, _readline)
+            if not line:
+                break
+            decoded = line.decode("utf-8", errors="replace") if isinstance(line, bytes) else ""
+            try:
+                await websocket.send_text(decoded)
+            except Exception:
+                # Disconnect or error during send
+                if proc:
+                    subprocess.run(f"taskkill /F /T /PID {proc.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                break
+
+        if proc:
+            proc.wait()
+            exit_code = proc.returncode
+        else:
+            exit_code = None
+
+        try:
+            if exit_code is None:
+                await websocket.send_text("\n[Process Terminated]\n")
+            else:
+                await websocket.send_text(f"\n[Process exited with code {exit_code}]\n")
+            await websocket.close()
+        except Exception:
+            pass
+
     except Exception as e:
-        await websocket.send_text(f"\nError: {str(e)}")
-        await websocket.close()
+        err_detail = f"{type(e).__name__}: {str(e)}"
+        try:
+            await websocket.send_text(f"\nBackend error: {err_detail}\n")
+            await websocket.close()
+        except Exception:
+            pass
+        if proc:
+            try:
+                subprocess.run(f"taskkill /F /T /PID {proc.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+
+    finally:
+        if proc is not None and proc in ACTIVE_TOOL_PROCESSES:
+            ACTIVE_TOOL_PROCESSES.remove(proc)
+
+@app.post("/api/kill-all")
+async def kill_all_processes():
+    global ACTIVE_SCAN_PROCESS
+    killed_count = 0
+    
+    # 1. Kill technical tools
+    for p in list(ACTIVE_TOOL_PROCESSES):
+        try:
+            subprocess.run(f"taskkill /F /T /PID {p.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            killed_count += 1
+        except Exception:
+            pass
+    ACTIVE_TOOL_PROCESSES.clear()
+    
+    # 2. Kill non-technical scans
+    if ACTIVE_SCAN_PROCESS:
+        try:
+            subprocess.run(f"taskkill /F /T /PID {ACTIVE_SCAN_PROCESS.pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            ACTIVE_SCAN_PROCESS = None
+            killed_count += 1
+        except Exception:
+            pass
+            
+    # Also explicitly kill OpenVAS container just in case
+    subprocess.run("docker stop openvas", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    
+    return {"status": "success", "message": f"Killed {killed_count} active processes"}
+
+
+
 
 @app.get("/api/file")
 def read_file(path: str):

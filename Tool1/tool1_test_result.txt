@@ -1,0 +1,55 @@
+
+============================================================
+  PredictPath AI — Tool 1 Production Test
+  File: c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\saved-logs\nmap-20260311-192817.xml
+  Time: 2026-03-13 22:56:53
+============================================================
+
+[OK] File exists: nmap-20260311-192817.xml (6,128 bytes)
+[..] Loading modules...
+     config     : 0.14s
+     schema     : 0.28s
+2026-03-13 22:56:54,420 - src.core.vulnintel_bridge - INFO - VulnIntel DB found: C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\VulnIntel\data\db\vuln.db
+2026-03-13 22:56:54,446 - src.core.vulnintel_bridge - INFO - Loaded 1542 KEV entries from VulnIntel DB
+     vulnintel  : 0.32s  (DB=True, KEV=1542)
+     ingestor   : 3.19s
+     pipeline   : 3.44s
+
+[..] Starting ingestion pipeline...
+2026-03-13 22:56:57,567 - src.processing.pipeline - INFO - [Tool1] Pipeline starting: c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\saved-logs\nmap-20260311-192817.xml (limit=5000)
+[Tool1] Processing: nmap-20260311-192817.xml
+2026-03-13 22:56:57,568 - src.ingestion.universal - INFO - Streaming from c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\saved-logs\nmap-20260311-192817.xml (Format: .xml)
+2026-03-13 22:56:57,617 - src.ingestion.universal - INFO - Nmap XML: yielded 8 port/host events from nmap-20260311-192817.xml
+2026-03-13 22:56:57,640 - src.storage.writer - INFO - [Tool1] Wrote 8 events -> C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\data\output\2026-03-11\events_1773431817619.parquet
+[Tool1] Summary written: C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\ingestion_summary.json
+2026-03-13 22:56:57,643 - src.processing.pipeline - INFO - [Tool1] Pipeline complete. Success=8, Failed=0
+
+[Tool1] ✅ COMPLETE: 8 events ingested, 0 failed
+[Tool1] Output: C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\data\output
+[Tool1] MITRE Techniques: {'T1046': 8}
+
+============================================================
+  RESULT SUMMARY
+============================================================
+  Status          : SUCCESS
+  Events Ingested : 8
+  Events Failed   : 0
+  Duration        : 0.08s
+  Output Dir      : C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\data\output
+
+  Event Types:
+    network_connect           : 8
+
+  Severity Breakdown:
+    high                      : 8
+
+  MITRE Techniques Detected:
+    T1046                     : 8
+
+  Top Hosts:
+    127.0.0.1                      : 8
+
+============================================================
+  ✅ PASS — Tool 1 is production ready!
+============================================================
+

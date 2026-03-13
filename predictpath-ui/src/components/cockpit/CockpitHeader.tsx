@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Shield, Activity, Clock, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Shield, Activity, Clock, Settings, HelpCircle, LogOut, Octagon } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,12 @@ import { ModeToggle } from "@/components/navigation/ModeToggle";
 interface CockpitHeaderProps {
   onReset: (level: ResetLevel) => void;
   onSyncIntel: () => void;
+  onKillAll?: () => void;
   systemStatus: "idle" | "running" | "error";
   mode?: "technical" | "non-technical";
 }
 
-export const CockpitHeader = ({ onReset, onSyncIntel, systemStatus, mode = "technical" }: CockpitHeaderProps) => {
+export const CockpitHeader = ({ onReset, onSyncIntel, onKillAll, systemStatus, mode = "technical" }: CockpitHeaderProps) => {
   const getStatusBadge = () => {
     switch (systemStatus) {
       case "running":
@@ -103,6 +104,17 @@ export const CockpitHeader = ({ onReset, onSyncIntel, systemStatus, mode = "tech
         <div className="h-6 w-px bg-border mx-1" />
 
         <ResetControls onReset={onReset} mode={mode} />
+
+        <Button 
+          variant={systemStatus === "running" ? "destructive" : "outline"}
+          size="sm" 
+          className={`h-8 gap-2 transition-colors ${systemStatus === "running" ? "animate-pulse" : "border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-400"}`}
+          onClick={onKillAll}
+          title="Kill Switch (Stop All Activity)"
+        >
+          <Octagon className="h-4 w-4 fill-current" />
+          <span className="font-semibold uppercase tracking-wider text-[10px]">Kill Switch</span>
+        </Button>
 
         <Button variant="ghost" size="icon" className="h-8 w-8">
           <Settings className="h-4 w-4" />

@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { useAppStore } from "@/store/useAppStore";
 
-const WS_BASE = "ws://localhost:8000";
-const API_BASE = "http://localhost:8000";
+const WS_BASE = `ws://${window.location.host}`;
+const API_BASE = "";
 
 interface ScanLog {
     id: string;
@@ -22,8 +23,17 @@ interface ScanLog {
 }
 
 const NonTechnicalMode = () => {
-    const [activeScan, setActiveScan] = useState<string | null>(null);
-    const [systemStatus, setSystemStatus] = useState<"idle" | "running" | "error">("idle");
+    const {
+        nonTechActiveScan: activeScan,
+        setNonTechActiveScan: setActiveScan,
+        nonTechSystemStatus: systemStatus,
+        setNonTechSystemStatus: setSystemStatus,
+        nonTechTerminalLines: terminalLines,
+        setNonTechTerminalLines: setTerminalLines,
+        addNonTechTerminalLine: addTerminalLine,
+        resetNonTechState
+    } = useAppStore();
+
     const [logRefreshTrigger, setLogRefreshTrigger] = useState(0);
     const [showLogsDialog, setShowLogsDialog] = useState(false);
     const [logs, setLogs] = useState<ScanLog[]>([]);
@@ -36,22 +46,6 @@ const NonTechnicalMode = () => {
     // URL Prompt state for Web Scan
     const [showUrlDialog, setShowUrlDialog] = useState(false);
     const [targetUrl, setTargetUrl] = useState("https://example.com");
-
-    // Terminal state
-    const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([
-        {
-            id: "init-1",
-            type: "info",
-            content: "PredictPath AI - Non-Technical Security Scanner",
-            timestamp: new Date(),
-        },
-        {
-            id: "init-2",
-            type: "info",
-            content: "Select a security scanner to begin guided analysis",
-            timestamp: new Date(),
-        },
-    ]);
 
     // Fetch logs when dialog opens or refresh trigger changes
     useEffect(() => {
@@ -71,20 +65,6 @@ const NonTechnicalMode = () => {
             console.error("Failed to fetch scan history:", error);
         }
     };
-
-    // Add line to terminal
-    const addTerminalLine = useCallback(
-        (type: TerminalLine["type"], content: string) => {
-            const newLine: TerminalLine = {
-                id: `line-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                type,
-                content,
-                timestamp: new Date(),
-            };
-            setTerminalLines((prev) => [...prev, newLine]);
-        },
-        []
-    );
 
     // Clear terminal
     const handleClearTerminal = useCallback(() => {
@@ -178,16 +158,19 @@ const NonTechnicalMode = () => {
         startScanExecution("web", { target_url: targetUrl });
     };
 
-    // Handle stop scan
-    const handleStopScan = useCallback(async () => {
-        if (!confirm("Are you sure you want to stop the scan?")) return;
+    // Handle stop scan (alias for kill-all but we could use the same kill-all endpoint)
+    const handleKillAll = useCallback(async () => {
+        if (!confirm("Are you sure you want to stop all active scans?")) return;
 
-        addTerminalLine("command", "# Stopping active scan...");
+        addTerminalLine("command", ">>> KILL SWITCH ACTIVATED <<<");
+        addTerminalLine("warning", "Terminating all active processes...");
         try {
-            const res = await fetch(`${API_BASE}/api/stop-scan`, { method: "POST" });
+            const res = await fetch(`${API_BASE}/api/kill-all`, { method: "POST" });
             const data = await res.json();
             if (res.ok) {
-                addTerminalLine("info", "Stop command sent. Waiting for cleanup...");
+                addTerminalLine("warning", data.message || "All processes terminated.");
+                setSystemStatus("idle");
+                setActiveScan(null);
             } else {
                 addTerminalLine("error", `Failed to stop: ${data.message}`);
             }
@@ -196,9 +179,12 @@ const NonTechnicalMode = () => {
         }
     }, [addTerminalLine]);
 
-    // Handle reset
+    const handleStopScan = handleKillAll;
+
+    // Handle internal soft/hard resets
     const handleReset = useCallback(
         async (level: ResetLevel) => {
+            resetNonTechState();
             setTerminalLines([
                 {
                     id: `reset-${Date.now()}`,
@@ -207,6 +193,7 @@ const NonTechnicalMode = () => {
                     timestamp: new Date(),
                 },
             ]);
+            setSystemStatus("idle");
 
             if (level === "soft" || level === "hard" || level === "logs") {
                 try {
@@ -378,6 +365,7 @@ const NonTechnicalMode = () => {
             <CockpitHeader
                 onReset={handleReset}
                 onSyncIntel={handleSyncIntel}
+                onKillAll={handleKillAll}
                 systemStatus={systemStatus}
                 mode="non-technical"
             />

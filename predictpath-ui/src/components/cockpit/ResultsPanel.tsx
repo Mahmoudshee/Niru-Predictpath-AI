@@ -536,7 +536,7 @@ const ExecutionReportView = ({ data }: { data: any }) => {
   const fetchScriptInfo = async () => {
     setLoadingScript(true);
     try {
-      const res = await fetch("http://localhost:8000/api/tool5/script-info");
+      const res = await fetch("/api/tool5/script-info");
       const info = await res.json();
       setScriptInfo(info);
     } catch {
@@ -550,7 +550,7 @@ const ExecutionReportView = ({ data }: { data: any }) => {
 
   const handleDownload = () => {
     if (!scriptInfo?.path) return;
-    const url = `http://localhost:8000/api/download?path=${encodeURIComponent(scriptInfo.path)}`;
+    const url = `/api/download?path=${encodeURIComponent(scriptInfo.path)}`;
     const a = document.createElement("a");
     a.href = url;
     a.download = scriptInfo.filename;
@@ -637,7 +637,7 @@ const ExecutionReportView = ({ data }: { data: any }) => {
                 className="h-8 text-xs bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 gap-2"
                 disabled={!data.guideline_path}
                 onClick={() => {
-                  const url = `http://localhost:8000/api/download?path=${encodeURIComponent(data.guideline_path)}`;
+                  const url = `/api/download?path=${encodeURIComponent(data.guideline_path)}`;
                   const a = document.createElement("a");
                   a.href = url;
                   a.download = data.guideline_filename;
@@ -652,7 +652,7 @@ const ExecutionReportView = ({ data }: { data: any }) => {
                 className="h-8 text-xs bg-green-600 hover:bg-green-500 text-white font-bold px-4 gap-2"
                 disabled={!data.script_path}
                 onClick={() => {
-                  const url = `http://localhost:8000/api/download?path=${encodeURIComponent(data.script_path)}`;
+                  const url = `/api/download?path=${encodeURIComponent(data.script_path)}`;
                   const a = document.createElement("a");
                   a.href = url;
                   a.download = data.script_filename;
@@ -812,7 +812,7 @@ const GovernanceView = ({ data: initialData }: { data: any }) => {
   const fetchLive = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/tool6/status");
+      const res = await fetch("/api/tool6/status");
       const live = await res.json();
       setData(live);
     } catch {
@@ -892,7 +892,7 @@ const GovernanceView = ({ data: initialData }: { data: any }) => {
             onClick={() => {
               const path = data.pdf_audit_path || data.last_learning_event?.pdf_audit_path;
               const filename = data.pdf_audit_filename || data.last_learning_event?.pdf_audit_filename || "Audit_Report.pdf";
-              const url = `http://localhost:8000/api/download?path=${encodeURIComponent(path)}`;
+              const url = `/api/download?path=${encodeURIComponent(path)}`;
               const a = document.createElement("a");
               a.href = url;
               a.download = filename;
