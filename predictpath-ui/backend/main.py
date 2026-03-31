@@ -479,17 +479,49 @@ def get_tool6_drift():
     except Exception as e:
         return {"available": False, "error": str(e), "samples": []}
 
+@app.get("/api/tool6/audits")
+def get_tool6_audits():
+    """Returns metadata about generated Tool 6 Audit PDFs."""
+    deployments_dir = os.path.join(TOOLS_ROOT, "Tool6", "deployments")
+    if not os.path.exists(deployments_dir):
+        return {"available": False, "message": "No audit reports generated yet.", "audits": []}
+    
+    audits = sorted(
+        glob.glob(os.path.join(deployments_dir, "PredictPath_Audit_*.pdf")),
+        key=os.path.getmtime,
+        reverse=True
+    )
+    
+    if not audits:
+        return {"available": False, "message": "No audit reports found.", "audits": []}
+    
+    return {
+        "available": True,
+        "audits": [
+            {
+                "filename": os.path.basename(s),
+                "path": os.path.relpath(s, TOOLS_ROOT).replace("\\", "/"),
+                "size_bytes": os.path.getsize(s),
+                "generated_at": datetime.fromtimestamp(os.path.getmtime(s)).isoformat()
+            }
+            for s in audits
+        ]
+    }
+
 
 @app.delete("/api/file")
 def delete_file(path: str):
     """Delete a specific log file"""
     abs_path = os.path.abspath(os.path.join(TOOLS_ROOT, path))
     
-    # Security: only allow deleting files in logs directory
+    # Security: only allow deleting files in logs directory and tool6 audits
     saved_logs_dir = os.path.join(TOOLS_ROOT, "scripts", "saved-logs")
+    tool6_audits_dir = os.path.join(TOOLS_ROOT, "Tool6", "deployments")
     
-    if not abs_path.startswith(saved_logs_dir):
-        raise HTTPException(status_code=403, detail="Can only delete files in logs directory")
+    # Using `os.path.normpath` just to be safe with path comparisons
+    norm_abs = os.path.normpath(abs_path)
+    if not (norm_abs.startswith(os.path.normpath(saved_logs_dir)) or norm_abs.startswith(os.path.normpath(tool6_audits_dir))):
+        raise HTTPException(status_code=403, detail="Can only delete files in logs or audits directory")
     
     if not os.path.exists(abs_path):
         raise HTTPException(status_code=404, detail="File not found")
@@ -612,7 +644,8 @@ async def websocket_scan(websocket: WebSocket):
         
         # For network scans, run actual Nmap and OpenVAS scripts
         if scan_type == "network":
-            await run_network_scan(websocket)
+            skip_openvas = data.get("skip_openvas", False)
+            await run_network_scan(websocket, skip_openvas)
         elif scan_type == "web":
             # Real OWASP ZAP Scan
             target_url = data.get("target_url")
@@ -666,7 +699,25 @@ async def stop_scan():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-async def run_network_scan(websocket: WebSocket):
+@app.post("/api/kill-all")
+async def kill_all():
+    global ACTIVE_SCAN_PROCESS
+    # First stop any main scan (Nmap, Endpoint, Web)
+    await stop_scan()
+    
+    # Next, aggressively stop any running pipeline Tools (Tool 1-6)
+    # We use wmic to match background scripts without killing THIS fastapi backend.
+    try:
+        # Stop Tool 1 ingestor
+        subprocess.run('wmic process where "CommandLine like \'%run_tool1%\'" call terminate', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # Stop Tool 2-6 models
+        subprocess.run('wmic process where "CommandLine like \'%src.main%\'" call terminate', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        return {"status": "success", "message": "All pipeline scans & tools effectively terminated."}
+    except Exception as e:
+        return {"status": "error", "message": f"Killed active scan but tool termination failed: {str(e)}"}
+
+async def run_network_scan(websocket: WebSocket, skip_openvas: bool = False):
     """Execute Nmap first, then prompt user for OpenVAS deep scan"""
     global ACTIVE_SCAN_PROCESS
     try:
@@ -764,40 +815,44 @@ async def run_network_scan(websocket: WebSocket):
         # ============================================
         # USER PROMPT: Ask about OpenVAS deep scan
         # ============================================
-        await websocket.send_text("═══════════════════════════════════════")
-        await websocket.send_text("USER DECISION REQUIRED")
-        await websocket.send_text("═══════════════════════════════════════")
-        await websocket.send_text("")
-        await websocket.send_text("Nmap scan completed. Do you want to run a deeper")
-        await websocket.send_text("vulnerability scan using OpenVAS?")
-        await websocket.send_text("")
-        await websocket.send_text("⚠ Note: OpenVAS deep scan can take 15-60 minutes")
-        await websocket.send_text("")
-        
-        # Send special prompt message that UI will recognize
-        print(f"[DEBUG] Sending user prompt to WebSocket...")  # Debug log
-        await websocket.send_json({
-            "type": "user_prompt",
-            "message": "Run deeper vulnerability scan with OpenVAS?",
-            "options": ["Yes", "No"]
-        })
-        print(f"[DEBUG] User prompt sent successfully")  # Debug log
-        
-        # Wait for user response
-        try:
-            response_data = await asyncio.wait_for(
-                websocket.receive_json(),
-                timeout=300.0  # 5 minute timeout for user decision
-            )
-            user_choice = response_data.get("choice", "").lower()
-        except asyncio.TimeoutError:
-            await websocket.send_text("")
-            await websocket.send_text("⚠ No response received. Defaulting to 'No'.")
+        if skip_openvas:
+            await websocket.send_text("Autopilot active: Automatically skipping OpenVAS deep scan.")
             user_choice = "no"
-        
-        await websocket.send_text("")
-        await websocket.send_text(f"User selected: {user_choice.upper()}")
-        await websocket.send_text("")
+        else:
+            await websocket.send_text("═══════════════════════════════════════")
+            await websocket.send_text("USER DECISION REQUIRED")
+            await websocket.send_text("═══════════════════════════════════════")
+            await websocket.send_text("")
+            await websocket.send_text("Nmap scan completed. Do you want to run a deeper")
+            await websocket.send_text("vulnerability scan using OpenVAS?")
+            await websocket.send_text("")
+            await websocket.send_text("⚠ Note: OpenVAS deep scan can take 15-60 minutes")
+            await websocket.send_text("")
+            
+            # Send special prompt message that UI will recognize
+            print(f"[DEBUG] Sending user prompt to WebSocket...")  # Debug log
+            await websocket.send_json({
+                "type": "user_prompt",
+                "message": "Run deeper vulnerability scan with OpenVAS?",
+                "options": ["Yes", "No"]
+            })
+            print(f"[DEBUG] User prompt sent successfully")  # Debug log
+            
+            # Wait for user response
+            try:
+                response_data = await asyncio.wait_for(
+                    websocket.receive_json(),
+                    timeout=300.0  # 5 minute timeout for user decision
+                )
+                user_choice = response_data.get("choice", "").lower()
+            except asyncio.TimeoutError:
+                await websocket.send_text("")
+                await websocket.send_text("⚠ No response received. Defaulting to 'No'.")
+                user_choice = "no"
+            
+            await websocket.send_text("")
+            await websocket.send_text(f"User selected: {user_choice.upper()}")
+            await websocket.send_text("")
         
         # ============================================
         # BRANCH: User selected NO

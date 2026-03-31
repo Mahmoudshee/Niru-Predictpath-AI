@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Shield, Activity, Clock, Settings, HelpCircle, LogOut, Octagon } from "lucide-react";
+import { Shield, Activity, Clock, Settings, HelpCircle, LogOut, Octagon, FolderLock } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ResetControls, ResetLevel } from "./ResetControls";
 import { ModeToggle } from "@/components/navigation/ModeToggle";
+
+import { AuditFolderDialog } from "./AuditFolderDialog";
 
 interface CockpitHeaderProps {
   onReset: (level: ResetLevel) => void;
@@ -16,6 +19,8 @@ interface CockpitHeaderProps {
 }
 
 export const CockpitHeader = ({ onReset, onSyncIntel, onKillAll, systemStatus, mode = "technical" }: CockpitHeaderProps) => {
+  const [isAuditFolderOpen, setIsAuditFolderOpen] = useState(false);
+
   const getStatusBadge = () => {
     switch (systemStatus) {
       case "running":
@@ -43,99 +48,117 @@ export const CockpitHeader = ({ onReset, onSyncIntel, onKillAll, systemStatus, m
   };
 
   return (
-    <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm px-4 flex items-center justify-between">
-      {/* Left - Branding */}
-      <div className="flex items-center gap-3">
-        <motion.div
-          className="flex items-center gap-2"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
-          <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
-            <Shield className="h-5 w-5 text-primary" />
+    <>
+      <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm px-4 flex items-center justify-between">
+        {/* Left - Branding */}
+        <div className="flex items-center gap-3">
+          <motion.div
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+              <Shield className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-foreground leading-tight">
+                PredictPath AI
+              </span>
+              <span className="text-[10px] text-muted-foreground leading-tight">
+                Command Cockpit
+              </span>
+            </div>
+          </motion.div>
+
+          <div className="h-6 w-px bg-border mx-2" />
+
+          {getStatusBadge()}
+        </div>
+
+        {/* Center - Connection Status */}
+        <div className="hidden md:flex items-center gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+            <span>PowerShell Connected</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-foreground leading-tight">
-              PredictPath AI
-            </span>
-            <span className="text-[10px] text-muted-foreground leading-tight">
-              Command Cockpit
-            </span>
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-success" />
+            <span>Tool Folders Mounted</span>
           </div>
-        </motion.div>
-
-        <div className="h-6 w-px bg-border mx-2" />
-
-        {getStatusBadge()}
-      </div>
-
-      {/* Center - Connection Status */}
-      <div className="hidden md:flex items-center gap-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-          <span>PowerShell Connected</span>
+          <div className="flex items-center gap-1.5">
+            <Clock className="h-3 w-3" />
+            <span className="font-mono">{new Date().toLocaleTimeString()}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-success" />
-          <span>Tool Folders Mounted</span>
+
+        {/* Right - Controls */}
+        <div className="flex items-center gap-2">
+          <ModeToggle />
+
+          <div className="h-6 w-px bg-border mx-1" />
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-2 border-primary/50 text-primary hover:bg-primary/10"
+            onClick={() => setIsAuditFolderOpen(true)}
+            title="Generated Audit Reports Folder"
+          >
+            <FolderLock className="h-4 w-4" />
+            <span>Audits Folder</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-2 border-primary/30 hover:bg-primary/10 text-primary"
+            onClick={onSyncIntel}
+          >
+            <Activity className="h-4 w-4" />
+            <span>Sync Intel</span>
+          </Button>
+
+          <div className="h-6 w-px bg-border mx-1" />
+
+          <ResetControls onReset={onReset} mode={mode} />
+
+          <Button 
+            variant={systemStatus === "running" ? "destructive" : "outline"}
+            size="sm" 
+            className={`h-8 gap-2 transition-colors ${systemStatus === "running" ? "animate-pulse" : "border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-400"}`}
+            onClick={onKillAll}
+            title="Kill Switch (Stop All Activity)"
+          >
+            <Octagon className="h-4 w-4 fill-current" />
+            <span className="font-semibold uppercase tracking-wider text-[10px]">Kill Switch</span>
+          </Button>
+
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Settings className="h-4 w-4" />
+          </Button>
+
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <HelpCircle className="h-4 w-4" />
+          </Button>
+
+          <div className="h-6 w-px bg-border mx-1" />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive transition-colors"
+            onClick={() => signOut(auth)}
+            title="Sign Out"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
-        <div className="flex items-center gap-1.5">
-          <Clock className="h-3 w-3" />
-          <span className="font-mono">{new Date().toLocaleTimeString()}</span>
-        </div>
-      </div>
+      </header>
 
-      {/* Right - Controls */}
-      <div className="flex items-center gap-2">
-        <ModeToggle />
-
-        <div className="h-6 w-px bg-border mx-1" />
-
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 gap-2 border-primary/30 hover:bg-primary/10 text-primary"
-          onClick={onSyncIntel}
-        >
-          <Activity className="h-4 w-4" />
-          <span>Sync Intel</span>
-        </Button>
-
-        <div className="h-6 w-px bg-border mx-1" />
-
-        <ResetControls onReset={onReset} mode={mode} />
-
-        <Button 
-          variant={systemStatus === "running" ? "destructive" : "outline"}
-          size="sm" 
-          className={`h-8 gap-2 transition-colors ${systemStatus === "running" ? "animate-pulse" : "border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-400"}`}
-          onClick={onKillAll}
-          title="Kill Switch (Stop All Activity)"
-        >
-          <Octagon className="h-4 w-4 fill-current" />
-          <span className="font-semibold uppercase tracking-wider text-[10px]">Kill Switch</span>
-        </Button>
-
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Settings className="h-4 w-4" />
-        </Button>
-
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <HelpCircle className="h-4 w-4" />
-        </Button>
-
-        <div className="h-6 w-px bg-border mx-1" />
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive transition-colors"
-          onClick={() => signOut(auth)}
-          title="Sign Out"
-        >
-          <LogOut className="h-4 w-4" />
-        </Button>
-      </div>
-    </header>
+      <AuditFolderDialog 
+        open={isAuditFolderOpen} 
+        onOpenChange={setIsAuditFolderOpen} 
+      />
+    </>
   );
 };

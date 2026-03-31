@@ -1,24 +1,55 @@
 {
-  "generated_at": "2026-03-13T19:41:32.628791+00:00",
-  "version_id": "v88b29608",
+  "generated_at": "2026-03-18T12:44:42.427889+00:00",
+  "version_id": "vfedd04d1",
   "containment_threshold": 0.4,
   "disruptive_threshold": 0.6,
-  "trust_momentum": 0.07921317420922912,
-  "success_streak": 18,
+  "trust_momentum": 0.15332176573626546,
+  "success_streak": 32,
   "failure_streak": 0,
   "trend": "relaxing",
   "trend_label": "Relaxing (Adapting)",
   "ledger_integrity": false,
-  "ledger_entry_count": 36,
+  "ledger_entry_count": 64,
   "recent_ledger_entries": [
     {
-      "hash_id": "cb45d33eea0f...",
+      "hash_id": "f4f04b83a579...",
       "event_type": "LEARNING_UPDATE",
       "actor": "LearningEngine",
-      "timestamp": "2026-03-13T19:41:32.284624",
+      "timestamp": "2026-03-18T12:44:41.173087",
       "payload": {
-        "old_ver": "v192174c0",
-        "new_ver": "v88b29608",
+        "old_ver": "vb8ed4fef",
+        "new_ver": "vfedd04d1",
+        "source": "script_gen",
+        "actions_processed": 2,
+        "domains_covered": [
+          "Endpoint"
+        ],
+        "high_urgency_count": 0,
+        "approval_required": 0,
+        "kev_context": {
+          "successes": 0,
+          "failures": 0
+        },
+        "reason": "Script generated for 2 action(s) across Endpoint domain(s). Trust posture updated based on script coverage. (Momentum=0.1533)"
+      }
+    },
+    {
+      "hash_id": "9cd14503d877...",
+      "event_type": "INGEST_REPORT",
+      "actor": "CLI_User",
+      "timestamp": "2026-03-18T12:44:40.810052",
+      "payload": {
+        "report_id": "PredictPath_Remediation_20260318_124429.ps1"
+      }
+    },
+    {
+      "hash_id": "b0b4141efa0e...",
+      "event_type": "LEARNING_UPDATE",
+      "actor": "LearningEngine",
+      "timestamp": "2026-03-18T12:40:43.273985",
+      "payload": {
+        "old_ver": "vf0ba0a65",
+        "new_ver": "vb8ed4fef",
         "source": "script_gen",
         "actions_processed": 1,
         "domains_covered": [
@@ -30,119 +61,26 @@
           "successes": 0,
           "failures": 0
         },
-        "reason": "Script generated for 1 action(s) across Endpoint domain(s). Trust posture updated based on script coverage. (Momentum=0.0792)"
+        "reason": "Script generated for 1 action(s) across Endpoint domain(s). Trust posture updated based on script coverage. (Momentum=0.1568)"
       }
     },
     {
-      "hash_id": "22cddfabf832...",
+      "hash_id": "cc13dc2c4541...",
       "event_type": "INGEST_REPORT",
       "actor": "CLI_User",
-      "timestamp": "2026-03-13T19:41:32.125673",
+      "timestamp": "2026-03-18T12:40:43.126570",
       "payload": {
-        "report_id": "PredictPath_Remediation_20260313_194119.ps1"
+        "report_id": "PredictPath_Remediation_20260318_124023.ps1"
       }
     },
     {
-      "hash_id": "03907b344b3f...",
+      "hash_id": "a920bac590bc...",
       "event_type": "LEARNING_UPDATE",
       "actor": "LearningEngine",
-      "timestamp": "2026-03-13T19:32:39.076669",
+      "timestamp": "2026-03-18T12:02:40.275703",
       "payload": {
-        "old_ver": "vda1facad",
-        "new_ver": "v192174c0",
-        "source": "script_gen",
-        "actions_processed": 1,
-        "domains_covered": [
-          "Network"
-        ],
-        "high_urgency_count": 1,
-        "approval_required": 1,
-        "kev_context": {
-          "successes": 0,
-          "failures": 0
-        },
-        "reason": "Script generated for 1 action(s) across Network domain(s). 1 action(s) flagged for manual approval. 1 high/critical urgency threat(s) addressed. Trust posture updated based on script coverage. (Momentum=0.0814)"
-      }
-    },
-    {
-      "hash_id": "91f7097b0a4e...",
-      "event_type": "INGEST_REPORT",
-      "actor": "CLI_User",
-      "timestamp": "2026-03-13T19:32:38.937146",
-      "payload": {
-        "report_id": "PredictPath_Remediation_20260313_193216.ps1"
-      }
-    },
-    {
-      "hash_id": "411b8eb982c3...",
-      "event_type": "LEARNING_UPDATE",
-      "actor": "LearningEngine",
-      "timestamp": "2026-03-13T19:30:18.382832",
-      "payload": {
-        "old_ver": "v64bfa070",
-        "new_ver": "vda1facad",
-        "source": "script_gen",
-        "actions_processed": 1,
-        "domains_covered": [
-          "Network"
-        ],
-        "high_urgency_count": 1,
-        "approval_required": 1,
-        "kev_context": {
-          "successes": 0,
-          "failures": 0
-        },
-        "reason": "Script generated for 1 action(s) across Network domain(s). 1 action(s) flagged for manual approval. 1 high/critical urgency threat(s) addressed. Trust posture updated based on script coverage. (Momentum=0.0829)"
-      }
-    },
-    {
-      "hash_id": "0aebc4c5af32...",
-      "event_type": "INGEST_REPORT",
-      "actor": "CLI_User",
-      "timestamp": "2026-03-13T19:30:18.260605",
-      "payload": {
-        "report_id": "PredictPath_Remediation_20260313_193010.ps1"
-      }
-    },
-    {
-      "hash_id": "7701c31eaea1...",
-      "event_type": "LEARNING_UPDATE",
-      "actor": "LearningEngine",
-      "timestamp": "2026-03-13T19:11:06.091433",
-      "payload": {
-        "old_ver": "v561d9034",
-        "new_ver": "v64bfa070",
-        "source": "script_gen",
-        "actions_processed": 1,
-        "domains_covered": [
-          "Network"
-        ],
-        "high_urgency_count": 1,
-        "approval_required": 1,
-        "kev_context": {
-          "successes": 0,
-          "failures": 0
-        },
-        "reason": "Script generated for 1 action(s) across Network domain(s). 1 action(s) flagged for manual approval. 1 high/critical urgency threat(s) addressed. Trust posture updated based on script coverage. (Momentum=0.0845)"
-      }
-    },
-    {
-      "hash_id": "4bc226614970...",
-      "event_type": "INGEST_REPORT",
-      "actor": "CLI_User",
-      "timestamp": "2026-03-13T19:11:05.804085",
-      "payload": {
-        "report_id": "PredictPath_Remediation_20260313_191101.ps1"
-      }
-    },
-    {
-      "hash_id": "a39a9da4777e...",
-      "event_type": "LEARNING_UPDATE",
-      "actor": "LearningEngine",
-      "timestamp": "2026-03-13T19:09:39.497037",
-      "payload": {
-        "old_ver": "vd37d2765",
-        "new_ver": "v561d9034",
+        "old_ver": "va93486bd",
+        "new_ver": "vf0ba0a65",
         "source": "script_gen",
         "actions_processed": 1,
         "domains_covered": [
@@ -154,69 +92,132 @@
           "successes": 0,
           "failures": 0
         },
-        "reason": "Script generated for 1 action(s) across Endpoint domain(s). Trust posture updated based on script coverage. (Momentum=0.0865)"
+        "reason": "Script generated for 1 action(s) across Endpoint domain(s). Trust posture updated based on script coverage. (Momentum=0.1728)"
       }
     },
     {
-      "hash_id": "91d5fc7cbd8e...",
+      "hash_id": "919b656bfbe0...",
       "event_type": "INGEST_REPORT",
       "actor": "CLI_User",
-      "timestamp": "2026-03-13T19:09:39.363371",
+      "timestamp": "2026-03-18T12:02:39.661586",
       "payload": {
-        "report_id": "PredictPath_Remediation_20260313_181445.ps1"
+        "report_id": "PredictPath_Remediation_20260318_120213.ps1"
+      }
+    },
+    {
+      "hash_id": "8caf1b667127...",
+      "event_type": "LEARNING_UPDATE",
+      "actor": "LearningEngine",
+      "timestamp": "2026-03-18T08:20:38.439210",
+      "payload": {
+        "old_ver": "v0eb8491a",
+        "new_ver": "va93486bd",
+        "source": "script_gen",
+        "actions_processed": 3,
+        "domains_covered": [
+          "General",
+          "Endpoint"
+        ],
+        "high_urgency_count": 1,
+        "approval_required": 0,
+        "kev_context": {
+          "successes": 0,
+          "failures": 0
+        },
+        "reason": "Script generated for 3 action(s) across General, Endpoint domain(s). 1 high/critical urgency threat(s) addressed. Trust posture updated based on script coverage. (Momentum=0.1915)"
+      }
+    },
+    {
+      "hash_id": "c08296baf814...",
+      "event_type": "INGEST_REPORT",
+      "actor": "CLI_User",
+      "timestamp": "2026-03-18T08:20:38.322532",
+      "payload": {
+        "report_id": "PredictPath_Remediation_20260318_082001.ps1"
+      }
+    },
+    {
+      "hash_id": "ca4dbfd82a9e...",
+      "event_type": "LEARNING_UPDATE",
+      "actor": "LearningEngine",
+      "timestamp": "2026-03-18T08:12:28.721158",
+      "payload": {
+        "old_ver": "vfadd74f7",
+        "new_ver": "v0eb8491a",
+        "source": "script_gen",
+        "actions_processed": 1,
+        "domains_covered": [
+          "Endpoint"
+        ],
+        "high_urgency_count": 0,
+        "approval_required": 0,
+        "kev_context": {
+          "successes": 0,
+          "failures": 0
+        },
+        "reason": "Script generated for 1 action(s) across Endpoint domain(s). Trust posture updated based on script coverage. (Momentum=0.1865)"
+      }
+    },
+    {
+      "hash_id": "85e319e14b0c...",
+      "event_type": "INGEST_REPORT",
+      "actor": "CLI_User",
+      "timestamp": "2026-03-18T08:12:28.555287",
+      "payload": {
+        "report_id": "PredictPath_Remediation_20260318_081204.ps1"
       }
     }
   ],
   "model_history": [
     {
-      "version_id": "v88b29608",
+      "version_id": "vfedd04d1",
       "is_active": true,
       "containment_threshold": 0.4,
       "disruptive_threshold": 0.6,
-      "trust_momentum": 0.07921317420922912,
-      "success_streak": 18,
+      "trust_momentum": 0.15332176573626546,
+      "success_streak": 32,
       "failure_streak": 0,
-      "created_at": "2026-03-13T19:41:32.283624"
+      "created_at": "2026-03-18T12:44:41.171102"
     },
     {
-      "version_id": "v192174c0",
+      "version_id": "vb8ed4fef",
       "is_active": false,
       "containment_threshold": 0.4,
       "disruptive_threshold": 0.6,
-      "trust_momentum": 0.08142726377556367,
-      "success_streak": 17,
+      "trust_momentum": 0.15684913616031232,
+      "success_streak": 31,
       "failure_streak": 0,
-      "created_at": "2026-03-13T19:32:39.073671"
+      "created_at": "2026-03-18T12:40:43.267970"
     },
     {
-      "version_id": "vda1facad",
+      "version_id": "vf0ba0a65",
       "is_active": false,
       "containment_threshold": 0.4,
       "disruptive_threshold": 0.6,
-      "trust_momentum": 0.08285560444183962,
-      "success_streak": 16,
+      "trust_momentum": 0.17276368960036742,
+      "success_streak": 30,
       "failure_streak": 0,
-      "created_at": "2026-03-13T19:30:18.380832"
+      "created_at": "2026-03-18T12:02:40.272110"
     },
     {
-      "version_id": "v64bfa070",
+      "version_id": "va93486bd",
       "is_active": false,
       "containment_threshold": 0.4,
       "disruptive_threshold": 0.6,
-      "trust_momentum": 0.08453600522569367,
-      "success_streak": 15,
+      "trust_momentum": 0.19148669364749107,
+      "success_streak": 29,
       "failure_streak": 0,
-      "created_at": "2026-03-13T19:11:06.089440"
+      "created_at": "2026-03-18T08:20:38.437206"
     },
     {
-      "version_id": "v561d9034",
+      "version_id": "v0eb8491a",
       "is_active": false,
       "containment_threshold": 0.4,
       "disruptive_threshold": 0.6,
-      "trust_momentum": 0.0865129473243455,
-      "success_streak": 14,
+      "trust_momentum": 0.18645493370293068,
+      "success_streak": 28,
       "failure_streak": 0,
-      "created_at": "2026-03-13T19:09:39.496037"
+      "created_at": "2026-03-18T08:12:28.720165"
     }
   ],
   "drift_alerts": [
@@ -224,23 +225,24 @@
   ],
   "last_learning_event": {
     "source_file": "..\\Tool5\\execution_report.json",
-    "report_id": "PredictPath_Remediation_20260313_194119.ps1",
-    "new_model_version": "v88b29608",
-    "actions_processed": 1,
+    "report_id": "PredictPath_Remediation_20260318_124429.ps1",
+    "new_model_version": "vfedd04d1",
+    "actions_processed": 2,
     "domains_covered": [
       "Endpoint"
     ],
     "high_urgency_count": 0,
     "approval_required": 0,
     "action_types": [
-      "Enable Process Auditing"
+      "Enable Process Auditing",
+      "Monitor User Behavior"
     ],
     "is_script_gen": true,
-    "narrative": "Script generated for 1 action(s) across Endpoint domain(s). Trust posture updated based on script coverage.",
-    "timestamp": "2026-03-13T19:41:32.588266+00:00",
-    "pdf_audit_path": "Tool6/deployments/PredictPath_Audit_Report_20260313_224132.pdf",
-    "pdf_audit_filename": "PredictPath_Audit_Report_20260313_224132.pdf"
+    "narrative": "Script generated for 2 action(s) across Endpoint domain(s). Trust posture updated based on script coverage.",
+    "timestamp": "2026-03-18T12:44:42.164998+00:00",
+    "pdf_audit_path": "Tool6/deployments/PredictPath_Audit_Report_20260318_154441.pdf",
+    "pdf_audit_filename": "PredictPath_Audit_Report_20260318_154441.pdf"
   },
-  "pdf_audit_path": "Tool6/deployments/PredictPath_Audit_Report_20260313_224132.pdf",
-  "pdf_audit_filename": "PredictPath_Audit_Report_20260313_224132.pdf"
+  "pdf_audit_path": "Tool6/deployments/PredictPath_Audit_Report_20260318_154441.pdf",
+  "pdf_audit_filename": "PredictPath_Audit_Report_20260318_154441.pdf"
 }

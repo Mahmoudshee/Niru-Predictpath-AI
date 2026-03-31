@@ -34,6 +34,12 @@ interface AppState {
   nonTechTerminalLines: TerminalLine[];
   nonTechSystemStatus: "idle" | "running" | "error";
   nonTechActiveScan: string | null;
+  autopilotSecondsLeft: number;
+  autopilotActive: boolean;
+  autopilotScanRunning: boolean;
+  autopilotCycle: "endpoint" | "network";
+  isAborted: boolean;
+  autopilotTimerId: any;
   
   // Actions - Technical
   setTechTerminalLines: (lines: TerminalLine[] | ((prev: TerminalLine[]) => TerminalLine[])) => void;
@@ -51,6 +57,12 @@ interface AppState {
   addNonTechTerminalLine: (type: TerminalLine["type"], content: string) => void;
   setNonTechSystemStatus: (status: "idle" | "running" | "error") => void;
   setNonTechActiveScan: (scan: string | null) => void;
+  setAutopilotSecondsLeft: (seconds: number | ((prev: number) => number)) => void;
+  setAutopilotActive: (active: boolean) => void;
+  setAutopilotScanRunning: (running: boolean) => void;
+  setAutopilotCycle: (cycle: "endpoint" | "network" | ((prev: "endpoint" | "network") => "endpoint" | "network")) => void;
+  setIsAborted: (aborted: boolean) => void;
+  setAutopilotTimerId: (id: any) => void;
   
   // Reset
   resetTechState: () => void;
@@ -98,13 +110,19 @@ export const useAppStore = create<AppState>()(
         },
         {
           id: "init-2",
-          type: "info",
-          content: "Select a security scanner to begin guided analysis",
+          type: "success",
+          content: "Connected to unified security orchestration backend.",
           timestamp: new Date(),
         },
       ],
       nonTechSystemStatus: "idle",
       nonTechActiveScan: null,
+      autopilotSecondsLeft: 0,
+      autopilotActive: false,
+      autopilotScanRunning: false,
+      autopilotCycle: "endpoint",
+      isAborted: false,
+      autopilotTimerId: null,
       
       // Technical Actions
       setTechTerminalLines: (updater) => set((state) => ({
@@ -146,6 +164,12 @@ export const useAppStore = create<AppState>()(
       })),
       setNonTechSystemStatus: (status) => set({ nonTechSystemStatus: status }),
       setNonTechActiveScan: (scan) => set({ nonTechActiveScan: scan }),
+      setAutopilotSecondsLeft: (seconds) => set((state) => ({ autopilotSecondsLeft: typeof seconds === 'function' ? seconds(state.autopilotSecondsLeft) : seconds })),
+      setAutopilotActive: (active) => set({ autopilotActive: active }),
+      setAutopilotScanRunning: (running) => set({ autopilotScanRunning: running }),
+      setAutopilotCycle: (cycle) => set((state) => ({ autopilotCycle: typeof cycle === 'function' ? cycle(state.autopilotCycle) : cycle })),
+      setIsAborted: (aborted) => set({ isAborted: aborted }),
+      setAutopilotTimerId: (id) => set({ autopilotTimerId: id }),
       
       // Resets
       resetTechState: () => set({

@@ -1,0 +1,29 @@
+{
+  "total_processed": 1,
+  "ingestion_limit": 5000,
+  "success": 1,
+  "failed": 0,
+  "source_file": "..\\scripts\\saved-logs\\wazuh_report_20260318_154326.json",
+  "output_dir": "C:\\Users\\cisco\\Documents\\pushing_Niru_codes\\Niru-Predictpath-AI\\Tool1\\data\\output",
+  "timestamp": "2026-03-18T12:43:34.606699+00:00",
+  "intelligence": {
+    "event_types": {
+      "privilege_escalation": 1
+    },
+    "severity_breakdown": {
+      "high": 1
+    },
+    "mitre_breakdown": {
+      "T1548": 1
+    },
+    "top_hosts": {
+      "desktop-5gl66i5": 1
+    },
+    "top_users": {
+      "kenty": 1
+    },
+    "cve_ids_observed": [],
+    "total_unique_cves": 0
+  },
+  "status": "success"
+}

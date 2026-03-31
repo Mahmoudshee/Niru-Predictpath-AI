@@ -1,0 +1,1 @@
+# Python\nvenv/\nvenv*/\n.venv/\n__pycache__/\n*.pyc\n*.pyo\n*.pyd\n*$py.class\n.pytest_cache/\n\n# Node.js\nnode_modules/\ndist/\nbuild/\n\n# Environment Variables\n.env\n.env.*\n!.env.example\n\n# Logs\nlogs/\n*.log\n\n# Local Data & Test Outcomes\n*_test_result.txt\ningestion_summary.json\ndata/\n\n# OS & IDE\n.DS_Store\nThumbs.db\n.vscode/\n.idea/\n

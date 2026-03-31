@@ -294,6 +294,7 @@ class DecisionEngine:
                     justification=ActionJustification(
                         predicted_scenarios=[],
                         risk_reduction=RiskReduction(absolute=0.0, relative="None"),
+                        time_to_impact_seconds=0,
                         confidence_alignment=ConfidenceAlignment(tool3_confidence=conf, decision_confidence=conf, threshold_applied=0.0),
                         signal_gap_closed="Baseline monitoring"
                     )

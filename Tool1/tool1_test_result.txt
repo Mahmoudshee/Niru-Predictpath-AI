@@ -1,53 +1,53 @@
 
 ============================================================
   PredictPath AI — Tool 1 Production Test
-  File: c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\saved-logs\nmap-20260311-192817.xml
-  Time: 2026-03-13 22:56:53
+  File: ..\scripts\saved-logs\wazuh_report_20260318_154326.json
+  Time: 2026-03-18 15:43:31
 ============================================================
 
-[OK] File exists: nmap-20260311-192817.xml (6,128 bytes)
+[OK] File exists: wazuh_report_20260318_154326.json (1,880 bytes)
 [..] Loading modules...
-     config     : 0.14s
-     schema     : 0.28s
-2026-03-13 22:56:54,420 - src.core.vulnintel_bridge - INFO - VulnIntel DB found: C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\VulnIntel\data\db\vuln.db
-2026-03-13 22:56:54,446 - src.core.vulnintel_bridge - INFO - Loaded 1542 KEV entries from VulnIntel DB
-     vulnintel  : 0.32s  (DB=True, KEV=1542)
-     ingestor   : 3.19s
-     pipeline   : 3.44s
+     config     : 0.26s
+     schema     : 0.47s
+2026-03-18 15:43:32,518 - src.core.vulnintel_bridge - INFO - VulnIntel DB found: C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\VulnIntel\data\db\vuln.db
+2026-03-18 15:43:32,583 - src.core.vulnintel_bridge - INFO - Loaded 1543 KEV entries from VulnIntel DB
+     vulnintel  : 0.56s  (DB=True, KEV=1543)
+     ingestor   : 2.24s
+     pipeline   : 2.37s
 
 [..] Starting ingestion pipeline...
-2026-03-13 22:56:57,567 - src.processing.pipeline - INFO - [Tool1] Pipeline starting: c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\saved-logs\nmap-20260311-192817.xml (limit=5000)
-[Tool1] Processing: nmap-20260311-192817.xml
-2026-03-13 22:56:57,568 - src.ingestion.universal - INFO - Streaming from c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\scripts\saved-logs\nmap-20260311-192817.xml (Format: .xml)
-2026-03-13 22:56:57,617 - src.ingestion.universal - INFO - Nmap XML: yielded 8 port/host events from nmap-20260311-192817.xml
-2026-03-13 22:56:57,640 - src.storage.writer - INFO - [Tool1] Wrote 8 events -> C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\data\output\2026-03-11\events_1773431817619.parquet
+2026-03-18 15:43:34,410 - src.processing.pipeline - INFO - [Tool1] Pipeline starting: ..\scripts\saved-logs\wazuh_report_20260318_154326.json (limit=5000)
+[Tool1] Processing: wazuh_report_20260318_154326.json
+2026-03-18 15:43:34,412 - src.ingestion.universal - INFO - Streaming from ..\scripts\saved-logs\wazuh_report_20260318_154326.json (Format: .json)
+2026-03-18 15:43:34,414 - src.ingestion.universal - INFO - Auto-flattening report array: 'privilege_escalation' (1 events)
+2026-03-18 15:43:34,605 - src.storage.writer - INFO - [Tool1] Wrote 1 events -> C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\data\output\2026-03-18\events_1773837814480.parquet
 [Tool1] Summary written: C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\ingestion_summary.json
-2026-03-13 22:56:57,643 - src.processing.pipeline - INFO - [Tool1] Pipeline complete. Success=8, Failed=0
+2026-03-18 15:43:34,609 - src.processing.pipeline - INFO - [Tool1] Pipeline complete. Success=1, Failed=0
 
-[Tool1] ✅ COMPLETE: 8 events ingested, 0 failed
+[Tool1] ✅ COMPLETE: 1 events ingested, 0 failed
 [Tool1] Output: C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\data\output
-[Tool1] MITRE Techniques: {'T1046': 8}
+[Tool1] MITRE Techniques: {'T1548': 1}
 
 ============================================================
   RESULT SUMMARY
 ============================================================
   Status          : SUCCESS
-  Events Ingested : 8
+  Events Ingested : 1
   Events Failed   : 0
-  Duration        : 0.08s
+  Duration        : 0.20s
   Output Dir      : C:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\Tool1\data\output
 
   Event Types:
-    network_connect           : 8
+    privilege_escalation      : 1
 
   Severity Breakdown:
-    high                      : 8
+    high                      : 1
 
   MITRE Techniques Detected:
-    T1046                     : 8
+    T1548                     : 1
 
   Top Hosts:
-    127.0.0.1                      : 8
+    desktop-5gl66i5                : 1
 
 ============================================================
   ✅ PASS — Tool 1 is production ready!

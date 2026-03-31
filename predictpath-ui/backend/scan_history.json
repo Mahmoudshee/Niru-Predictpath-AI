@@ -1,20 +1,36 @@
 {
   "scans": [
     {
-      "id": "2fc19fcc-f322-4b5b-a5ca-9cd6fb1de2ba",
-      "scan_type": "network-nmap",
-      "timestamp": "2026-03-13T23:12:38.446317",
+      "id": "37bcbb98-0d8d-477b-b771-956ad853b154",
+      "scan_type": "endpoint",
+      "timestamp": "2026-03-18T15:43:26.153604",
       "status": "completed",
-      "log_path": "scripts\\saved-logs\\nmap\\nmap-20260313-231052.xml",
-      "file_name": "nmap-20260313-231052.xml"
+      "log_path": "scripts\\saved-logs\\wazuh_report_20260318_154326.json",
+      "file_name": "wazuh_report_20260318_154326.json"
     },
     {
-      "id": "2078ac62-4864-4388-927b-2a48a9f41be6",
-      "scan_type": "endpoint",
-      "timestamp": "2026-03-13T23:10:33.314175",
+      "id": "17e88d51-5fc1-400d-81cd-0bffc53762cf",
+      "scan_type": "network-nmap",
+      "timestamp": "2026-03-18T15:10:42.328915",
       "status": "completed",
-      "log_path": "scripts\\saved-logs\\wazuh_report_20260313_231033.json",
-      "file_name": "wazuh_report_20260313_231033.json"
+      "log_path": "scripts\\saved-logs\\nmap\\nmap-20260318-150711.xml",
+      "file_name": "nmap-20260318-150711.xml"
+    },
+    {
+      "id": "5dc21a7a-29d7-47fc-a795-8a7efeaeac70",
+      "scan_type": "web",
+      "timestamp": "2026-03-18T11:38:52.090421",
+      "status": "completed",
+      "log_path": "scripts\\saved-logs\\zap_report_20260318-113355.json",
+      "file_name": "zap_report_20260318-113355.json"
+    },
+    {
+      "id": "654d8874-61bf-4e0a-ba25-2e026f18b459",
+      "scan_type": "endpoint",
+      "timestamp": "2026-03-18T11:33:27.357744",
+      "status": "completed",
+      "log_path": "scripts\\saved-logs\\wazuh_report_20260318_113327.json",
+      "file_name": "wazuh_report_20260318_113327.json"
     }
   ]
 }

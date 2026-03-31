@@ -1,0 +1,100 @@
+[
+  {
+    "session_id": "Activity on 127.0.0.1",
+    "generated_at": "2026-03-18T12:43:56.060654",
+    "current_state": {
+      "observed_techniques": [
+        "T1046"
+      ],
+      "last_seen_timestamp": "2026-03-18T12:43:56.058667Z",
+      "graph_depth": 1,
+      "host_scope": [
+        "127.0.0.1"
+      ],
+      "observed_vulnerabilities": [
+        "CWE-200"
+      ]
+    },
+    "aggregate_confidence": 0.25,
+    "predicted_scenarios": [
+      {
+        "scenario_id": "f63cd9a0-2104-43ff-bcc5-ba70ac59931f",
+        "sequence": [
+          "T1190"
+        ],
+        "human_readable_sequence": "Exploit Public-Facing Application",
+        "probability": 0.2,
+        "reaction_time_window": {
+          "min_seconds": 10.0,
+          "max_seconds": 300.0
+        },
+        "time_window_text": "Window: 10s to 5m",
+        "risk_level": "Medium",
+        "scenario_type": "Primary",
+        "explainability": {
+          "positive_evidence": [
+            "Causal path from Network Service Discovery"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      },
+      {
+        "scenario_id": "c99e0806-dacf-4914-b337-8ec26ec42537",
+        "sequence": [
+          "T1190",
+          "T1059"
+        ],
+        "human_readable_sequence": "Exploit Public-Facing Application -> Command and Scripting Interpreter",
+        "probability": 0.12,
+        "reaction_time_window": {
+          "min_seconds": 20.0,
+          "max_seconds": 900.0
+        },
+        "time_window_text": "Window: 20s to 15m",
+        "risk_level": "Medium",
+        "scenario_type": "Secondary",
+        "explainability": {
+          "positive_evidence": [
+            "Causal path from Network Service Discovery"
+          ],
+          "negative_evidence": [],
+          "uncertainty_factors": []
+        }
+      }
+    ],
+    "mentor_narrative": "URGENT: Verified exploit patterns identified on Activity on 127.0.0.1. Attacker has likely bypassed initial defenses. An attacker exploiting these vulnerabilities is projected to pivot to 'Exploit Public-Facing Application' next (20% probability).",
+    "model_version": "v4.0-Vuln-Aware",
+    "evidence_summary": {
+      "grounding": 0.0,
+      "max_path_prob": 0.2,
+      "kev_boost": 0.0
+    },
+    "suppression_reason": null
+  },
+  {
+    "session_id": "Activity on kenty",
+    "generated_at": "2026-03-18T12:43:56.144330",
+    "current_state": {
+      "observed_techniques": [
+        "T1548"
+      ],
+      "last_seen_timestamp": "2026-03-18T12:43:56.144330Z",
+      "graph_depth": 1,
+      "host_scope": [
+        "desktop-5gl66i5"
+      ],
+      "observed_vulnerabilities": []
+    },
+    "aggregate_confidence": 0.1,
+    "predicted_scenarios": [],
+    "mentor_narrative": "Baseline activity observed for Activity on kenty. ",
+    "model_version": "v4.0-Vuln-Aware",
+    "evidence_summary": {
+      "grounding": 0.0,
+      "max_path_prob": 0.4,
+      "kev_boost": 0.0
+    },
+    "suppression_reason": null
+  }
+]

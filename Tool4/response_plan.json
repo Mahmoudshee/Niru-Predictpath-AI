@@ -1,0 +1,108 @@
+[
+  {
+    "session_id": "Activity on 127.0.0.1",
+    "decision_timestamp": "2026-03-18T12:44:21.764445Z",
+    "decision_confidence": 0.29,
+    "priority_rank": 1,
+    "urgency_level": "Low",
+    "recommended_actions": [
+      {
+        "action_id": "3e6ccefd-11c0-4784-8770-f1fadce70608",
+        "action_type": "Enable Process Auditing",
+        "action_class": "Containment",
+        "requires_approval": false,
+        "target": {
+          "type": "User",
+          "identifier": "Activity on 127.0.0.1"
+        },
+        "vulnerability_details": {
+          "is_kev": false,
+          "max_cvss": 0.0
+        },
+        "mitigation_guidelines": [
+          "Activate Sysmon or similar tool to track process creation.",
+          "Review command-line arguments for suspicious encoded strings.",
+          "Monitor for unauthorized use of living-off-the-land (LotL) binaries."
+        ],
+        "justification": {
+          "predicted_scenarios": [
+            "T1190"
+          ],
+          "risk_reduction": {
+            "absolute": 0.05,
+            "relative": "Mitigates 25% of T1190 risk"
+          },
+          "time_to_impact_seconds": 10,
+          "confidence_alignment": {
+            "tool3_confidence": 0.25,
+            "decision_confidence": 0.2875,
+            "threshold_applied": 0.1
+          },
+          "signal_gap_closed": "Controls T1190"
+        },
+        "recommended_within_seconds": 10
+      }
+    ],
+    "rejected_actions": [
+      {
+        "candidate_action": "Isolate Host",
+        "rejection_reasons": [
+          "Confidence (0.29) < Eff. Threshold (0.85)"
+        ]
+      }
+    ],
+    "model_version": "v4.1-Vuln-Driven",
+    "mentor_summary": "Automated containment strategy for Activity on 127.0.0.1 has been initiated to ensure defensive depth. The selected action, 'Enable Process Auditing', targets User 'Activity on 127.0.0.1' with an estimated risk reduction of 5.0% across the predicted trajectory.",
+    "decision_explainability": {
+      "why_now": "Vulnerability Context: Max CVSS 0.0. Prob (20%) within 10.0s.",
+      "why_not_later": "Delay increases lateral movement window.",
+      "what_happens_if_ignored": "Unmitigated Risk: 20% chance of T1190 exploiting 0.0 CVSS vuln.",
+      "correlation_context": "Aggregated Campaign: 1 correlated sessions hit 'Activity on 127.0.0.1'"
+    }
+  },
+  {
+    "session_id": "Activity on kenty",
+    "decision_timestamp": "2026-03-18T12:44:21.812444Z",
+    "decision_confidence": 0.11499999999999999,
+    "priority_rank": 2,
+    "urgency_level": "Low",
+    "recommended_actions": [
+      {
+        "action_id": "2b759d5f-241c-48b7-bfc6-74fc2813b775",
+        "action_type": "Monitor User Behavior",
+        "action_class": "Containment",
+        "requires_approval": false,
+        "target": {
+          "type": "User",
+          "identifier": "Activity on kenty"
+        },
+        "vulnerability_details": {},
+        "mitigation_guidelines": [],
+        "justification": {
+          "predicted_scenarios": [],
+          "risk_reduction": {
+            "absolute": 0.0,
+            "relative": "None"
+          },
+          "time_to_impact_seconds": 0,
+          "confidence_alignment": {
+            "tool3_confidence": 0.11499999999999999,
+            "decision_confidence": 0.11499999999999999,
+            "threshold_applied": 0.0
+          },
+          "signal_gap_closed": "Baseline monitoring"
+        },
+        "recommended_within_seconds": 0
+      }
+    ],
+    "rejected_actions": [],
+    "model_version": "v4.1-Vuln-Driven",
+    "mentor_summary": "No immediate threat detected. Continuing baseline monitoring.",
+    "decision_explainability": {
+      "why_now": "No predicted threats found.",
+      "why_not_later": "N/A",
+      "what_happens_if_ignored": "Unknown",
+      "correlation_context": null
+    }
+  }
+]

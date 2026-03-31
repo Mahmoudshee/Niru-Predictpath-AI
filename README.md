@@ -240,7 +240,7 @@ Remove-Item data/governance.db
 
 1. **Start Backend (Terminal 1)**
    ```powershell
-      cd cd c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\predictpath-ui\backend
+      cd c:\Users\cisco\Documents\pushing_Niru_codes\Niru-Predictpath-AI\predictpath-ui\backend
       .\venv\Scripts\activate
 
       venv\Scripts\python.exe main.py
@@ -255,7 +255,7 @@ Remove-Item data/governance.db
    npm run dev
    ```
 
-3. **Access**: Open `http://localhost:5173`
+3. **Access**: Open `http://localhost:8080`
 
 ---
 

@@ -1,0 +1,205 @@
+﻿{
+  "vulnerability": [],
+  "malware_behavior": [],
+  "privilege_escalation": [
+    {
+      "timestamp": "2026-03-18T11:32:57.971+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 1,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1773822777.251",
+      "full_log": "Mar 18 08:32:49 DESKTOP-5GL66I5 sudo[1353]:    kenty : TTY=pts/3 ; PWD=/mnt/c/Users/cisco/Documents/pushing_Niru_codes/Niru-Predictpath-AI ; USER=root ; COMMAND=/var/ossec/bin/wazuh-control rootcheck restart",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Mar 18 08:32:49",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/3",
+        "pwd": "/mnt/c/Users/cisco/Documents/pushing_Niru_codes/Niru-Predictpath-AI",
+        "command": "/var/ossec/bin/wazuh-control rootcheck restart"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-03-18T11:32:57.974+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 2,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1773822777.1746",
+      "full_log": "Mar 18 08:32:49 DESKTOP-5GL66I5 sudo[1370]:    kenty : TTY=pts/3 ; PWD=/mnt/c/Users/cisco/Documents/pushing_Niru_codes/Niru-Predictpath-AI ; USER=root ; COMMAND=/var/ossec/bin/wazuh-control vulnerability restart",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Mar 18 08:32:49",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/3",
+        "pwd": "/mnt/c/Users/cisco/Documents/pushing_Niru_codes/Niru-Predictpath-AI",
+        "command": "/var/ossec/bin/wazuh-control vulnerability restart"
+      },
+      "location": "journald"
+    },
+    {
+      "timestamp": "2026-03-18T11:32:57.977+0300",
+      "rule": {
+        "level": 3,
+        "description": "Successful sudo to ROOT executed.",
+        "id": "5402",
+        "firedtimes": 3,
+        "mail": false,
+        "groups": [
+          "syslog",
+          "sudo"
+        ],
+        "pci_dss": [
+          "10.2.5",
+          "10.2.2"
+        ],
+        "gpg13": [
+          "7.6",
+          "7.8",
+          "7.13"
+        ],
+        "gdpr": [
+          "IV_32.2"
+        ],
+        "hipaa": [
+          "164.312.b"
+        ],
+        "nist_800_53": [
+          "AU.14",
+          "AC.7",
+          "AC.6"
+        ],
+        "tsc": [
+          "CC6.8",
+          "CC7.2",
+          "CC7.3"
+        ]
+      },
+      "agent": {
+        "id": "000",
+        "name": "DESKTOP-5GL66I5"
+      },
+      "manager": {
+        "name": "DESKTOP-5GL66I5"
+      },
+      "id": "1773822777.3251",
+      "full_log": "Mar 18 08:32:49 DESKTOP-5GL66I5 sudo[1387]:    kenty : TTY=pts/3 ; PWD=/mnt/c/Users/cisco/Documents/pushing_Niru_codes/Niru-Predictpath-AI ; USER=root ; COMMAND=/var/ossec/bin/wazuh-control sca restart",
+      "predecoder": {
+        "program_name": "sudo",
+        "timestamp": "Mar 18 08:32:49",
+        "hostname": "DESKTOP-5GL66I5"
+      },
+      "decoder": {
+        "parent": "sudo",
+        "name": "sudo",
+        "ftscomment": "First time user executed the sudo command"
+      },
+      "data": {
+        "srcuser": "kenty",
+        "dstuser": "root",
+        "tty": "pts/3",
+        "pwd": "/mnt/c/Users/cisco/Documents/pushing_Niru_codes/Niru-Predictpath-AI",
+        "command": "/var/ossec/bin/wazuh-control sca restart"
+      },
+      "location": "journald"
+    }
+  ],
+  "persistence": []
+}

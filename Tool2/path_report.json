@@ -1,0 +1,77 @@
+[
+  {
+    "session_id": "Activity on 127.0.0.1",
+    "root_cause_node": "264ab2e1-7747-4a91-ab1b-25a8cedcc99e",
+    "blast_radius": [
+      "127.0.0.1"
+    ],
+    "path_anomaly_score": 22.3,
+    "prediction_vector": [
+      {
+        "next_node": "Lateral Movement",
+        "probability": 0.6
+      },
+      {
+        "next_node": "Collection",
+        "probability": 0.3
+      },
+      {
+        "next_node": "Command and Control",
+        "probability": 0.1
+      }
+    ],
+    "vulnerability_summary": [
+      ": Vulnerability Match (CVSS: 0.0)",
+      ": Security Policy Weakness",
+      "CWE-200: Information Exposure"
+    ],
+    "observed_techniques": [
+      "T1046"
+    ],
+    "cwe_clusters": [],
+    "event_summary": {
+      "network_connect": 16
+    },
+    "tactical_narrative": "Detected 16 correlated events in this behavioral session. ",
+    "plain_language_summary": "URGENT: Attacker has successfully achieved persistence or internal lateral movement. Data access is likely imminent.",
+    "business_risk_level": "Low",
+    "generated_at": "2026-03-18T12:43:45.788429"
+  },
+  {
+    "session_id": "Activity on kenty",
+    "root_cause_node": "ed93954c-6cd5-4c07-82b8-583f68ac8bea",
+    "blast_radius": [
+      "desktop-5gl66i5"
+    ],
+    "path_anomaly_score": 13.01,
+    "prediction_vector": [
+      {
+        "next_node": "Discovery",
+        "probability": 0.3
+      },
+      {
+        "next_node": "Credential Access",
+        "probability": 0.2
+      },
+      {
+        "next_node": "Standard User Activity",
+        "probability": 0.5
+      }
+    ],
+    "vulnerability_summary": [
+      ": Vulnerability Match (CVSS: 0.0)",
+      ": Security Policy Weakness"
+    ],
+    "observed_techniques": [
+      "T1548"
+    ],
+    "cwe_clusters": [],
+    "event_summary": {
+      "privilege_escalation": 1
+    },
+    "tactical_narrative": "Detected 1 correlated events in this behavioral session. ",
+    "plain_language_summary": "Routine system activity or reconnaissance. No immediate compromise of core logic detected.",
+    "business_risk_level": "Low",
+    "generated_at": "2026-03-18T12:43:45.934803"
+  }
+]
